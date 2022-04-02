@@ -31,10 +31,13 @@ module Personnage =
 	type classe = Archer | Guerrier | Magicien
 	type personnage = {nom : string ; genre : genre; classe : classe ; lvl : int ; exp : int ; pv : float ; sac : Objet.sac}
 	let creer_personnage : string -> genre -> classe -> personnage = fun n g c -> {nom = n ; genre = g ; classe = c ; exp = 0 ; lvl = 1 ; pv = 20. ; sac = Objet.creer_sac()}
-	let gainxp : personnage -> int -> int*personnage = fun p xp -> 
-		if p.exp+xp>=(2*p.lvl)*10 
-			then (1,{nom=p.nom; genre=p.genre; classe=p.classe; lvl=p.lvl+1; exp=p.exp+xp-(2*p.lvl)*10; pv=p.pv; sac=p.sac})
-			else (0,{nom=p.nom; genre=p.genre; classe=p.classe; lvl=p.lvl; exp=p.exp+xp; pv=p.pv; sac=p.sac})
+	let gain_xp : personnage -> int -> int*personnage = fun p xp -> 
+		let rec aux = fun lvl p exp ->
+			if p.exp+xp>=(2*p.lvl)*10 
+				then let nvxp = p.exp+xp-(2*p.lvl)*10 in
+					aux (lvl+1) {nom=p.nom; genre=p.genre; classe=p.classe; lvl=p.lvl+1; exp=nvxp; pv=p.pv; sac=p.sac} (xp-(2*p.lvl)*10)
+				else (lvl,{nom=p.nom; genre=p.genre; classe=p.classe; lvl=p.lvl; exp=p.exp-xp; pv=p.pv; sac=p.sac})
+		in aux 0 p xp
 	let modif_pv : personnage -> float -> personnage = fun p pv -> 
 		if p.pv+.pv>=20. 
 			then {nom=p.nom; genre=p.genre; classe=p.classe; lvl=p.lvl; exp=p.exp; pv=20.; sac=p.sac}
@@ -58,6 +61,8 @@ module Monstre =
 	type type_monstre = Golem | Sanglier | Moustiques of int
 	type loot = Objet of Objet.objet | Rien
 	type monstre = {monstre : type_monstre; loot : loot ; pv : int}
+	let modif_pv : monstre -> int -> monstre = fun m pv -> 
+		{monstre = m.monstre; loot = m.loot; pv = m.pv-pv}
 	let vie_monstre : type_monstre -> int = fun monstre ->
 		match monstre with
 		| Golem -> 25 + (Random.int 6)+1
@@ -84,3 +89,20 @@ module Monstre =
 		|Moustiques n-> Personnage.modif_pv p ((-1.)/.2.*.float_of_int n)
 	end
 ;;
+
+
+module Jeu =
+	struct
+	exception Personnage_mort
+	let rec combattre : Personnage.personnage -> Monstre.monstre -> Personnage.personnage = fun p m ->
+		let personnage = Monstre.monstre_frapper p m in
+		if personnage.pv<=0. then raise Personnage_mort else
+			let monstre = Monstre.modif_pv m (Personnage.frapper personnage) in
+			if monstre.pv<=0 then personnage else combattre personnage monstre
+	end
+;;-
+
+let perso1 = Personnage.creer_personnage "Pierre" Homme Guerrier;;
+let pchange = Jeu.combattre perso1 (Monstre.generer_monstre_aleatoire());;
+
+let a = Personnage.gain_xp perso1 5000;;
