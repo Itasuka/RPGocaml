@@ -160,6 +160,20 @@ module Affichage : SIGAFFICHAGE =
 		let lg = longueur_affichage perso in
 		let ligne_croix = borner_ligne_croix (ligne_de_tirets lg) in
 		ligne_croix^"\n"^(afficher_identite perso)^"\n"^ligne_croix^"\n"^(afficher_pv perso)^"\n"^ligne_croix^"\n"^(afficher_exp perso)^"\n"^ligne_croix^"\n"^(afficher_sac perso)^"\n"^ligne_croix
-		
+	
+(** Fonction permettant de demander a l'utilisateur un choix
+@return le choix de l'utilisateur*)
+let demander_action : unit -> string = fun () ->
+	print_string "(C) Continuer votre chemin \n(D) Dormir \n(M) Manger \n(V) Visualiser l'etat de votre personnage \n(Q) Quitter l'aventure \n<?> ";
+	read_line ()
+
+(** Fonction permmettant de demander a l'utilisateur un choix
+@return le choix de l'utilisateur*)
+let demander_reaction : unit -> string = fun () ->
+	print_string "(A) Attaquer \n(F) Fuir \n(V) Visualiser l'etat de votre personnage \n<?> ";
+	read_line ()
+
 	end
 ;;
+
+
