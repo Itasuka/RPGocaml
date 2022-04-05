@@ -1,8 +1,38 @@
-module Monstre =
+module type MONSTRE =
+	sig
+
+	type type_monstre = Golem | Sanglier | Moustiques of int
+
+	type loot = Objet of Objet.Objet.objet | Rien
+
+	type monstre = {monstre : type_monstre; loot : loot ; pv : int}
+
+	val get_loot : monstre -> Objet.Objet.objet
+
+	val modif_pv : monstre -> int -> monstre
+
+	val generer_monstre_aleatoire : unit -> monstre
+
+	val monstre_frapper : monstre -> float
+
+	val xp_monstre : monstre -> int
+
+end
+;;
+
+module Monstre : MONSTRE =
 	struct
 	type type_monstre = Golem | Sanglier | Moustiques of int
 	type loot = Objet of Objet.Objet.objet | Rien
 	type monstre = {monstre : type_monstre; loot : loot ; pv : int}
+	exception Pas_de_loot
+	(** Fontion qui récupère le loot d'un monstre
+	@param m : le monstre
+	@return le loot du monstre*)
+	let get_loot : monstre -> Objet.Objet.objet = fun m ->
+		match m.loot with
+		|Rien -> Objet.Objet.{quantite = 0; obj = Eponge}
+		|Objet o -> o
 	(** Fonction qui fait diminuer les pv d'un monstre
 	@param m : le monstre
 	@param pv : les pv enlevé
@@ -40,10 +70,21 @@ module Monstre =
 	@param p : le personnage qui se fait frapper
 	@param m : le monstre qui frappe
 	@return le personnage avec des pv en moins*)
-	let monstre_frapper : Personnage.Personnage.personnage -> monstre -> Personnage.Personnage.personnage = fun p m -> 
+	let monstre_frapper : monstre -> float = fun m -> 
 		match m.monstre with
-		|Golem ->  Personnage.Personnage.modif_pv p (-4.)
-		|Sanglier -> Personnage.Personnage.modif_pv p (-2.)
-		|Moustiques n-> Personnage.Personnage.modif_pv p ((-1.)/.2.*.float_of_int n)
+		|Golem ->  (-4.)
+		|Sanglier -> (-2.)
+		|Moustiques n-> ((-1.)/.2.*.float_of_int n)
+
+	(** Fonction qui associe à un type de monstre son xp gagné en combat
+	@param m : le monstre
+	@return l'xp gagné en tuant le monstre*)
+	let xp_monstre : monstre -> int = fun m ->
+		match m.monstre with
+		|Golem -> 8
+		|Sanglier -> 4
+		|Moustiques n -> 2+(1*(n-1))
+		
+
 	end
 ;;

@@ -1,3 +1,31 @@
+module type PERSONNAGE =
+	sig
+
+	type genre = Homme | Femme
+
+	type classe = Archer | Guerrier | Magicien
+
+	type personnage = {nom : string ; genre : genre; classe : classe ; lvl : int ; exp : int ; pv : float ; sac : Objet.Objet.sac}
+
+	val creer_personnage : string -> genre -> classe -> personnage
+
+	val gain_xp : personnage -> int -> int*personnage
+
+	val modif_pv : personnage -> float -> personnage
+
+	val frapper : personnage -> int
+
+	val modif_sac_perso : personnage -> Objet.Objet.contenu -> int -> personnage
+
+	val manger : personnage -> bool*personnage
+
+	val peut_perdre_objet : personnage -> bool*Objet.Objet.sac
+
+	val faire_perte_objet : personnage -> Objet.Objet.sac -> int*Objet.Objet.contenu*personnage
+
+end
+;;
+
 module Personnage =
 	struct
 	type genre = Homme | Femme
@@ -19,13 +47,13 @@ module Personnage =
 	@param xp : le montant d'expérience
 	@return le personnage avec l'expérience ajouté en fonction des niveaux*)
 	let gain_xp : personnage -> int -> int*personnage = fun p xp -> 
-		let nvxp = p.exp+xp in
-			let rec aux = fun lvlgain perso ->
+			let rec aux = fun lvlgain perso xp ->
+				let nvxp = p.exp+xp in
 				let xppourlvlup = (pow 2 perso.lvl)*10 in
 					if nvxp-xppourlvlup>=0 
-					then aux (lvlgain+1) {nom=perso.nom; genre=perso.genre; classe=perso.classe; exp=nvxp-xppourlvlup; lvl=perso.lvl+1; pv=perso.pv; sac=perso.sac}
-					else (lvlgain,{nom=perso.nom; genre=perso.genre; classe=perso.classe; exp=perso.exp; lvl=perso.lvl; pv=perso.pv; sac=perso.sac})
-			in aux 0 p
+					then aux (lvlgain+1) {nom=perso.nom; genre=perso.genre; classe=perso.classe; exp=nvxp-xppourlvlup; lvl=perso.lvl+1; pv=perso.pv; sac=perso.sac} 0
+					else (lvlgain,{nom=perso.nom; genre=perso.genre; classe=perso.classe; exp=nvxp; lvl=perso.lvl; pv=perso.pv; sac=perso.sac})
+			in aux 0 p xp
 	(** Fonction qui permet de modifier les pv d'un personnage
 	@param p : le personnage à modifier
 	@param pv : le montant de pv ajouter

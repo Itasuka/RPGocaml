@@ -1,4 +1,3 @@
-(*
 module type SIGAFFICHAGE = 
 	sig
 
@@ -8,11 +7,15 @@ module type SIGAFFICHAGE =
 		
 		val afficher_personnage : Personnage.Personnage.personnage -> string
 
+		val phrase_manger : unit -> string
+
 		val phrase_intialisation_surprise : Monstre.Monstre.monstre -> string
 
-		val phrase_attaque_monstre : Monstre.Monstre.monstre -> int -> string
+		val phrase_attaque_monstre : Monstre.Monstre.monstre -> float -> string
 
 		val phrase_tentative_perso : int->string
+
+		val phrase_mort_monstre : Monstre.Monstre.monstre->string
 
 		val phrase_mort_personnage : Personnage.Personnage.personnage -> Monstre.Monstre.monstre -> string
 
@@ -28,15 +31,32 @@ module type SIGAFFICHAGE =
 
 		val phrase_demande_action : unit->string
 
-		val phrase_exp_obj_up : int -> Objet.Objet.objet -> string
+		val phrase_exp_obj_up : int -> Monstre.Monstre.loot -> string
 
-		val demander_action : unit->string
+		val afficher_action : unit -> string
 
-		val demander_reaction : unit->string
-	end;;
-		*)
+		val demander_action : unit -> string
+
+		val afficher_reaction : unit -> string
+
+		val demander_reaction : unit -> string
+
+		val debut_partie : unit -> string
+
+		val demander_nom : unit -> string
+
+		val afficher_genre : string -> string
+
+		val demander_genre : unit -> string
+
+		val afficher_classe : Personnage.Personnage.genre -> string
 		
-module Affichage =
+		val demander_classe : unit -> string
+
+	end;;
+
+		
+module Affichage : SIGAFFICHAGE =
 	struct
 	
 	(** Fonction produisant une ligne de nbfois tirets
@@ -191,6 +211,15 @@ module Affichage =
 let aff : string->unit = fun s ->
 	print_string(s)
 
+(** Fonction permettant de générer aléatoirement un phrase lorsque le personnage mange
+@return la phrase aléatoire*)
+let phrase_manger : unit -> string = fun () ->
+	let ran = Random.int 3 in
+		match ran with 
+		|0 -> "Vous avez mangé un poulet du RU et vous avez regagné 2 pv\n"
+		|1 -> "Le poulet que vous venez de manger était vraiment bon ! Vous gagnez 2 pv\n"
+		|_ -> "Vous engloutissez le poulet et rotez un coup afin de gagner 2 pv !\n"
+
 (** Fonction permettant de mettre un article indefini devant le type du monstre
 @param monstre : le monstre pour lequel on veut l'article indefini
 @return : le string de l'article indefini avec le type du monstre*)
@@ -208,9 +237,9 @@ let un_nom_monstre : Monstre.Monstre.monstre->string = fun monstre ->
 let phrase_intialisation_surprise : Monstre.Monstre.monstre->string = fun monstre ->
 	let lenb=Random.int 3 in
 	match lenb with
-	| 0 -> "Soudain, vous tombez nez a nez avec "^(un_nom_monstre monstre)^"."
-	| 1 -> "Tout à coup, "^(un_nom_monstre monstre)^" surgit."
-	| 2 -> "D’un seul coup, vous vous retrouver face à face à "^(un_nom_monstre monstre)^"."
+	| 0 -> "Soudain, vous tombez nez a nez avec "^(un_nom_monstre monstre)^".\n"
+	| 1 -> "Tout à coup, "^(un_nom_monstre monstre)^" surgit.\n"
+	| 2 -> "D’un seul coup, vous vous retrouver face à face à "^(un_nom_monstre monstre)^".\n"
 	| _ -> ""
 	
 (** Fonction permettant d'accorder au feminin et masculin un mot selon le genre du personnage
@@ -251,12 +280,13 @@ let accord_pluriel_float : float->string->string = fun nb mot ->
 @param pv : le nombre de points de vie retires au personnage
 @return le string de la tentative du monstre avec le nombre de points de vie retires au personnage*)
 let phrase_tentative_monstre : Monstre.Monstre.monstre->float->string = fun monstre pv ->
-	let pv_retires = string_of_float pv in
+	let pv_abs = abs_float pv in
+	let pv_retires = string_of_float pv_abs in
 	let lenb=Random.int 3 in
 	match lenb with
-	| 0 -> "vous touche et vous perdez "^pv_retires^" "^(accord_pluriel_float pv "point")^" de vie."
-	| 1 -> "vous blesse et vous retire "^pv_retires^" "^(accord_pluriel_float pv "point")^" de vie."
-	| 2 -> "fait mouche et vous ote "^pv_retires^" "^(accord_pluriel_float pv "point")^" de vie."
+	| 0 -> "vous touche et vous perdez "^pv_retires^" "^(accord_pluriel_float pv_abs "point")^" de vie.\n"
+	| 1 -> "vous blesse et vous retire "^pv_retires^" "^(accord_pluriel_float pv_abs "point")^" de vie.\n"
+	| 2 -> "fait mouche et vous ote "^pv_retires^" "^(accord_pluriel_float pv_abs "point")^" de vie.\n"
 	| _ -> ""
 
 (** Fonction permettant de mettre un article defini devant le type de monstre
@@ -268,7 +298,7 @@ let le_nom_monstre : Monstre.Monstre.monstre->string = fun monstre ->
 	| Golem -> "le Golem"
 	| Moustiques n when n=1-> "la Nuee de "^(string_of_int n)^" moustique"
 	| Moustiques n -> "la Nuee de "^(string_of_int n)^" moustiques"
-	| Sanglier -> "la Sanglier"
+	| Sanglier -> "le Sanglier"
 
 (** Fonction permettant de generer aleatoirement une phrase lorsque le monstre attaque
 @param monstre : le monstre qui attaque
@@ -277,9 +307,9 @@ let le_nom_monstre : Monstre.Monstre.monstre->string = fun monstre ->
 let phrase_attaque_monstre : Monstre.Monstre.monstre->float->string = fun monstre pv_retires ->
 	let lenb=Random.int 3 in
 	match lenb with
-	| 0 -> (le_nom_monstre monstre)^" tente de vous blesser. "^ (pronom_monstre monstre)^" "^(phrase_tentative_monstre monstre pv_retires)^"."
-	| 1 -> (le_nom_monstre monstre)^" vous attaque violemment. "^(pronom_monstre monstre)^" "^(phrase_tentative_monstre monstre pv_retires)^"."
-	| 2 -> (le_nom_monstre monstre)^" vous charge brutalement. "^(pronom_monstre monstre)^" "^(phrase_tentative_monstre monstre pv_retires)^"."
+	| 0 -> (le_nom_monstre monstre)^" tente de vous blesser. "^ (pronom_monstre monstre)^" "^(phrase_tentative_monstre monstre pv_retires)
+	| 1 -> (le_nom_monstre monstre)^" vous attaque violemment. "^(pronom_monstre monstre)^" "^(phrase_tentative_monstre monstre pv_retires)
+	| 2 -> (le_nom_monstre monstre)^" vous charge brutalement. "^(pronom_monstre monstre)^" "^(phrase_tentative_monstre monstre pv_retires)
 	| _ -> ""
 
 (**Fonction permettant de generer aleatoirement la phrase de la tentative du personnage
@@ -290,15 +320,15 @@ let phrase_tentative_perso : int->string = fun pv ->
 	let pv_retires = string_of_int pv in
 	if pv=0 then
 		match lenb with
-		| 0 -> "Vous attaquer mais vous manquez votre cible."
-		| 1 -> "Vous attaquer le monstre mais vous le rater."
-		| 2 -> "Vous tenter de blesser le monstre mais il esquive votre attaque."
+		| 0 -> "Vous attaquer mais vous manquez votre cible.\n"
+		| 1 -> "Vous attaquer le monstre mais vous le rater.\n"
+		| 2 -> "Vous tenter de blesser le monstre mais il esquive votre attaque.\n"
 		| _ -> ""
 	else
 		match lenb with
-		| 0 -> "Vous attaquer et vous touchez le monstre. Il perd "^pv_retires^" "^(accord_pluriel_int pv "point")^" de vie." 
-		| 1 -> "Vous attaquer et blessez le monstre. Vous lui retirez "^pv_retires^" "^(accord_pluriel_int pv "point")^" de vie." 
-		| 2 -> "Vous tenter de blesser le monstre et faites mouche. Vous lui otez "^pv_retires^" "^(accord_pluriel_int pv "point")^" de vie." 
+		| 0 -> "Vous attaquer et vous touchez le monstre. Il perd "^pv_retires^" "^(accord_pluriel_int pv "point")^" de vie.\n" 
+		| 1 -> "Vous attaquer et blessez le monstre. Vous lui retirez "^pv_retires^" "^(accord_pluriel_int pv "point")^" de vie.\n" 
+		| 2 -> "Vous tenter de blesser le monstre et faites mouche. Vous lui otez "^pv_retires^" "^(accord_pluriel_int pv "point")^" de vie.\n" 
 		| _ -> ""
 
 (** Fonction permettant de mettre un article demonstratif devant le type de monstre
@@ -318,9 +348,9 @@ let ce_nom_monstre : Monstre.Monstre.monstre->string = fun monstre ->
 let phrase_mort_monstre : Monstre.Monstre.monstre->string = fun monstre ->
 	let lenb=Random.int 3 in
 	match lenb with
-	| 0 -> (le_nom_monstre monstre)^" meurt dans d’affreuses (vraiment affreuses) souffrances."
-	| 1 -> "L’horrible "^(string_monstre monstre)^" tombe a terre en laissant planer un silence de mort."
-	| 2 -> "“O desespoir ! Vous etes bien trop fort !” hurle "^(le_nom_monstre monstre)^" en s’effondrant au sol..."
+	| 0 -> (le_nom_monstre monstre)^" meurt dans d’affreuses (vraiment affreuses) souffrances.\n"
+	| 1 -> "L’horrible "^(string_monstre monstre)^" tombe a terre en laissant planer un silence de mort.\n"
+	| 2 -> "“O desespoir ! Vous etes bien trop fort !” hurle "^(le_nom_monstre monstre)^" en s’effondrant au sol...\n"
 	| _ -> ""
 
 (** Fonction permettant de generer aletoirement une phrase de mort pour le personnage
@@ -330,9 +360,9 @@ let phrase_mort_monstre : Monstre.Monstre.monstre->string = fun monstre ->
 let phrase_mort_personnage : Personnage.Personnage.personnage-> Monstre.Monstre.monstre->string = fun perso monstre->
 	let lenb=Random.int 3 in
 	match lenb with
-	| 0 -> "Vous tombez au combat aujourd’hui. D’autre loueront vos exploits mais aujourd’hui "^(ce_nom_monstre monstre)^" a entache votre reputation a tout jamais."
-	| 1 -> "Vous etes "^(accord_fem_masc perso "mort")^"."
-	| 2 -> "Vous mourrez dans d’affreuses souffrances."
+	| 0 -> "Vous tombez au combat aujourd’hui. D’autre loueront vos exploits mais aujourd’hui "^(ce_nom_monstre monstre)^" a entache votre reputation a tout jamais.\n"
+	| 1 -> "Vous etes "^(accord_fem_masc perso "mort")^".\n"
+	| 2 -> "Vous mourrez dans d’affreuses souffrances.\n"
 	| _ -> ""
 
 (** Fonction permettant de generer une phrase lorsque le personnage meurt durant la nuit
@@ -341,9 +371,9 @@ let phrase_mort_personnage : Personnage.Personnage.personnage-> Monstre.Monstre.
 @return le string de la phrase de mort du personnage*)
 let phrase_mort_nuit : Personnage.Personnage.personnage-> Monstre.Monstre.monstre->string = fun perso monstre->
 	match monstre.monstre with
-		| Golem -> "Vous installez votre campement et tombez rapidement "^(accord_fem_masc perso "endormi")^". Pendant votre sommeil, un Golem surgit et vous fracasse le crane. Vous êtes accord_fem_masc mort."
-		| Moustiques n -> "Vous etes "^(accord_fem_masc perso "fatigue")^" et decidez de dormir a la belle etoile pret d’un marecage. Cependant, une Nuee de moustique apparait et vous pique inlassablement jusqu’a vous tuer. Vous etes "^(accord_fem_masc perso "mort")^"."
-		| _ -> "Vos nombreux baillements vous poussent a installer un campement pour dormir e l’oree d’une foret. Vous pensant a l’abri vous vous endormez. Or, un Sanglier vous charge et vous pietine. Vous gemissez de douleur jusqu’a la mort."
+		| Golem -> "Vous installez votre campement et tombez rapidement "^(accord_fem_masc perso "endormi")^". Pendant votre sommeil, un Golem surgit et vous fracasse le crane. Vous êtes accord_fem_masc mort.\n"
+		| Moustiques n -> "Vous etes "^(accord_fem_masc perso "fatigue")^" et decidez de dormir a la belle etoile pret d’un marecage. Cependant, une Nuee de moustique apparait et vous pique inlassablement jusqu’a vous tuer. Vous etes "^(accord_fem_masc perso "mort")^".\n"
+		| _ -> "Vos nombreux baillements vous poussent a installer un campement pour dormir e l’oree d’une foret. Vous pensant a l’abri vous vous endormez. Or, un Sanglier vous charge et vous pietine. Vous gemissez de douleur jusqu’a la mort.\n"
 
 (** Fonction permettant de generer aleatoirement une phrase lorsque le personnage dort sans mourir
 @param perso : le personnage allant dormir
@@ -351,9 +381,9 @@ let phrase_mort_nuit : Personnage.Personnage.personnage-> Monstre.Monstre.monstr
 let phrase_nuit : Personnage.Personnage.personnage->string = fun perso ->
 	let lenb=Random.int 3 in
 		match lenb with
-		| 0 -> "Vous installez votre campement et tombez rapidement "^(accord_fem_masc perso "endormi")^". Au petit matin, vous vous réveillez sans encombre et gagnez 4 points vies."
-		| 1 -> "Vous etes "^(accord_fem_masc perso "fatigue")^" et decidez de dormir a la belle etoile pret d’un marecage. La lueur du Soleil levant sur l’eau vous reveille et vous gagnez 4 points de vies."
-		| 2 -> "Vos nombreux baillements vous poussent a installer un campement pour dormir a l’oree d’une foret. A l’aube, la rosée du matin vous reveille et vous gagnez 4 points de vie."
+		| 0 -> "Vous installez votre campement et tombez rapidement "^(accord_fem_masc perso "endormi")^". Au petit matin, vous vous réveillez sans encombre et gagnez 4 points vies.\n"
+		| 1 -> "Vous etes "^(accord_fem_masc perso "fatigue")^" et decidez de dormir a la belle etoile pret d’un marecage. La lueur du Soleil levant sur l’eau vous reveille et vous gagnez 4 points de vies.\n"
+		| 2 -> "Vos nombreux baillements vous poussent a installer un campement pour dormir a l’oree d’une foret. A l’aube, la rosée du matin vous reveille et vous gagnez 4 points de vie.\n"
 		| _ -> ""
 
 
@@ -364,9 +394,9 @@ let phrase_nuit : Personnage.Personnage.personnage->string = fun perso ->
 let phrase_perte_objet : int-> Objet.Objet.contenu->string = fun nb ctn ->
 	let lenb=Random.int 3 in
 		match lenb with
-		| 0 -> "Dans votre precipitation a fuir vous perdez "^(string_of_int nb)^(bien_ecrire_contenu nb ctn)^"."
-		| 1 -> "Vous fuyez rapidement mais egarez "^(string_of_int nb)^(bien_ecrire_contenu nb ctn)^"."
-		| 2 -> "En prenant la fuite vous laissez echapper "^(string_of_int nb)^(bien_ecrire_contenu nb ctn)^"."
+		| 0 -> "Dans votre precipitation a fuir vous perdez "^(string_of_int nb)^(bien_ecrire_contenu nb ctn)^".\n"
+		| 1 -> "Vous fuyez rapidement mais egarez "^(string_of_int nb)^(bien_ecrire_contenu nb ctn)^".\n"
+		| 2 -> "En prenant la fuite vous laissez echapper "^(string_of_int nb)^(bien_ecrire_contenu nb ctn)^".\n"
 		| _ -> ""
 
 (** Fonction permettant de generer aleatoirement un evenement avec un monstre
@@ -377,24 +407,24 @@ let phrase_evenement_monstre : Monstre.Monstre.monstre->string = fun monstre ->
 		match monstre.monstre with
 		| Golem ->
 			(match lenb with
-			| 0 -> "Le sol tremble et un enorme Golem passe au dessus de votre tete sans vous voir."
-			| 1 -> "Au loin, vous appercevez une tete de Golem au dessus des arbres de la foret."
-			| 2 -> "Vous voyez un Golem qui prend tranquillement un bain de boue dans le marai en chantonnant."
-			| 3 -> "Vous sentez une odeur pestinentielle vennant vers vous : c’est un Golem puant qui flatule devant votre nez."
+			| 0 -> "Le sol tremble et un enorme Golem passe au dessus de votre tete sans vous voir.\n"
+			| 1 -> "Au loin, vous appercevez une tete de Golem au dessus des arbres de la foret.\n"
+			| 2 -> "Vous voyez un Golem qui prend tranquillement un bain de boue dans le marai en chantonnant.\n"
+			| 3 -> "Vous sentez une odeur pestinentielle vennant vers vous : c’est un Golem puant qui flatule devant votre nez.\n"
 			| _ -> "")
 		| Sanglier ->
 			(match lenb with
-			| 0 -> "Vous entendez du bruit a l’oree de la foret et vous apercevez un Sanglier."
-			| 1 -> "Vous voyez un Sanglier qui fouille le sol au loin."
-			| 2 ->"Un Sanglier cherche des baies en se baladant entre les buissons."
-			| 3 -> "Vous reconnaissez, au loin, la musique “Hakuna Matata” : c’est un Sanglier qui l’interprete gracieusement. Entrainnez par la musique, vous commencez a chantonner a votre tour."
+			| 0 -> "Vous entendez du bruit a l’oree de la foret et vous apercevez un Sanglier.\n"
+			| 1 -> "Vous voyez un Sanglier qui fouille le sol au loin.\n"
+			| 2 ->"Un Sanglier cherche des baies en se baladant entre les buissons.\n"
+			| 3 -> "Vous reconnaissez, au loin, la musique “Hakuna Matata” : c’est un Sanglier qui l’interprete gracieusement. Entrainnez par la musique, vous commencez a chantonner a votre tour.\n"
 			| _ -> "")
 		| Moustiques n ->
 			(match lenb with
-			| 0 -> "Vous entendez de “bizzz…bizzzz…bizzzzz” autour de vous : c’est "^(un_nom_monstre monstre)^"."
-			| 1 -> "Vous appercevez "^(un_nom_monstre monstre)^" au loin."
-			| 2 -> "Un bruit assourdissant passe pret de vous : vous reconnaissez "^(un_nom_monstre monstre)^"."
-			| 3 -> "Vous voyez "^(un_nom_monstre monstre)^"passant entre les arbres."
+			| 0 -> "Vous entendez de “bizzz…bizzzz…bizzzzz” autour de vous : c’est "^(un_nom_monstre monstre)^".\n"
+			| 1 -> "Vous appercevez "^(un_nom_monstre monstre)^" au loin.\n"
+			| 2 -> "Un bruit assourdissant passe pret de vous : vous reconnaissez "^(un_nom_monstre monstre)^".\n"
+			| 3 -> "Vous voyez "^(un_nom_monstre monstre)^"passant entre les arbres.\n"
 			| _ -> "")
 
 (** Fonction permettant de generer aletoirement une phrase de passage de niveau
@@ -403,9 +433,9 @@ let phrase_evenement_monstre : Monstre.Monstre.monstre->string = fun monstre ->
 let phrase_level_up : int->string = fun lvl ->
 	let lenb=Random.int 3 in
 		match lenb with
-		| 0 -> "Feliciations ! Vous progressez au niveau "^(string_of_int lvl)^"."
-		| 1 -> "Bravo ! Vous augmentez au niveau "^(string_of_int lvl)^"."
-		| 2 -> "Hourra ! Vous passez au niveau "^(string_of_int lvl)^"."
+		| 0 -> "Feliciations ! Vous progressez au niveau "^(string_of_int lvl)^".\n"
+		| 1 -> "Bravo ! Vous augmentez au niveau "^(string_of_int lvl)^".\n"
+		| 2 -> "Hourra ! Vous passez au niveau "^(string_of_int lvl)^".\n"
 		| _ -> ""
 
 (** Fonction permettant de donner le string d'un potentiel gain d'objet
@@ -414,7 +444,7 @@ let phrase_level_up : int->string = fun lvl ->
 let gain_objet : Monstre.Monstre.loot -> string = fun obj ->
 	match obj with
 	| Rien -> "."
-	| Objet {quantite=qte;obj=ctn} -> " et "^string_of_int qte^" "^(bien_ecrire_contenu qte ctn)^"."
+	| Objet {quantite=qte;obj=ctn} -> " et "^(bien_ecrire_contenu qte ctn)^"."
 
 (** Fonction permettant de generer aleatoirement une phrase de gain de points d'experience et d'objet
 @param exp : le nombre de points d'experience gagne par le personnage
@@ -433,54 +463,67 @@ let phrase_exp_obj_up : int -> Monstre.Monstre.loot -> string = fun exp obj ->
 let phrase_demande_action : unit->string = fun () ->
 	let lenb=Random.int 3 in
 		match lenb with
-		| 0 -> "Que voulez-vous faire ?"
-		| 1 -> "Que faites-vous ?"
-		| 2 -> "Quelle action voulez-vous affectuer ?"
+		| 0 -> "Que voulez-vous faire ?\n"
+		| 1 -> "Que faites-vous ?\n"
+		| 2 -> "Quelle action voulez-vous affectuer ?\n"
 		| _ -> ""
 
-
-exception Choix_invalide of string
+let afficher_action : unit -> string = fun () -> 
+		"(C) Continuer votre chemin \n(D) Dormir \n(M) Manger \n(V) Visualiser l'etat de votre personnage \n(Q) Quitter l'aventure "
 
 (** Fonction permettant de demander a l'utilisateur un choix d'action
 @return le choix de l'utilisateur*)
 let rec demander_action : unit -> string = fun () ->
-	print_string "(C) Continuer votre chemin \n(D) Dormir \n(M) Manger \n(V) Visualiser l'etat de votre personnage \n(Q) Quitter l'aventure \n<?> ";
+	let () = print_string "\n<?> " in
 	let reponse = read_line () in
-		if reponse = "C" || reponse = "c" || reponse = "D" || reponse = "d" || reponse = "M" || reponse = "m" || reponse = "V" || reponse = "v" || reponse = "Q" || reponse = "q"  then reponse else raise (Choix_invalide "\n Votre choix est invalide ! \n")
+		if reponse = "C" || reponse = "c" || reponse = "D" || reponse = "d" || reponse = "M" || reponse = "m" || reponse = "V" || reponse = "v" || reponse = "Q" || reponse = "q"  
+			then reponse 
+			else let () = print_string "\n Votre choix est invalide ! \n" in demander_action ()
 
+
+let afficher_reaction : unit -> string = fun () ->
+	"(A) Attaquer \n(F) Fuir \n(V) Visualiser l'etat de votre personnage "
 
 (** Fonction permmettant de demander a l'utilisateur un choix de réaction par rapport à un évènement
 @return le choix de l'utilisateur*)
-let demander_reaction : unit -> string = fun () ->
-	print_string "(A) Attaquer \n(F) Fuir \n(V) Visualiser l'etat de votre personnage \n<?> ";
+let rec demander_reaction : unit -> string = fun () ->
+	let () = print_string "\n<?> " in 
 	let reponse = read_line () in
-		if reponse = "A" || reponse = "a" || reponse = "F" || reponse = "f" || reponse = "V" || reponse = "v" then reponse else raise (Choix_invalide "\n Votre choix est invalide ! \n")
+		if reponse = "A" || reponse = "a" || reponse = "F" || reponse = "f" || reponse = "V" || reponse = "v" 
+			then reponse 
+			else let () = print_string "\n Votre choix est invalide ! \n" in demander_reaction()
 
 	(** Fonction qui affiche l'introduction dans l'univers du jeu*)
-	let debut_partie : unit -> unit = fun () -> print_string " Bienvenue jeune aventurier(e), vous vous apretez a vous lancer dans une aventure remplis d'embuche.
-Parviendrez vous a terrasser tout les monstres qui se dresseront sur votre chemin pour atteindre le niveau 10 ou allez vous mourrir dans d'atroce souffrance ?"
+	let debut_partie : unit -> string = fun () -> "Bienvenue jeune aventurier(e), vous vous appretez a vous lancer dans une aventure remplis d'embuches.
+Parviendrez-vous a terrasser tout les monstres qui se dresseront sur votre chemin pour atteindre le niveau 10 ou allez vous mourrir dans d'atroces souffrances ? \n"
 
 (** Fonction permettant de demander a l'utilisateur son nom
 @return le nom de l'utilisateur*)
-let demander_nom : unit -> string = fun () -> print_string "Tout d'abord quel est votre nom jeune aventurier ? ";
+let demander_nom : unit -> string = fun () -> let () = print_string "Tout d'abord quel est votre nom jeune aventurier(e) ?\n<?> " in
     read_line ()
 
-(** Fonction permettant de demander a l'utilisateur son genre *)
-let demander_genre : unit -> string = fun () -> print_string ("Enchanté"^demander_nom()^"etes vous un (H) Homme ou une (F) Femme ?\n<?> ");
-    let reponse = read_line() in
-        if reponse = "H" || reponse = "F" || reponse = "h" || reponse = "f" then reponse else raise (Choix_invalide "\n Votre choix est invalide ! \n")
+let afficher_genre : string -> string = fun n -> "\nEnchanté "^n^" ètes vous un (H) Homme ou une (F) Femme ?"
 
-    
+(** Fonction permettant de demander a l'utilisateur son genre *)
+let rec demander_genre : unit -> string = fun () ->
+	let () = print_string "\n<?> " in
+    let reponse = read_line() in
+        if reponse = "H" || reponse = "F" || reponse = "h" || reponse = "f" then reponse else let () = print_string "\n Votre choix est invalide ! \n" in demander_genre()
+
+let afficher_classe : Personnage.Personnage.genre -> string = fun genre -> 
+	if genre = Personnage.Personnage.Homme 
+		then "\nVoulez vous etre un : \n(G) Guerrier \n(A) Archer \n(M) Magicien "
+		else "\nVoulez vous etre une : \n(G) Guerriere \n(A) Archere \n(M) Magicienne "
+
 (** Fonction permettant de demander a l'utilisateur sa classe
 @param genre : le genre du personnage dont on veut demander la classe
 @return le choix de classe de l'utilisateur*)
-let demander_classe : Personnage.Personnage.genre -> string = fun genre -> if genre = Personnage.Personnage.Homme then print_string "Voulez vous etre un (G) Guerrier \n(A) Archer \n(M) Magicien \n<?> "
-     else print_string "Voulez vous etre une (G) Guerriere \n(A) Archere \n(M) Magicienne \n<?> "
-     ;
+let rec demander_classe :unit -> string = fun () -> 
+	let () = print_string "\n<?> " in
     let reponse = read_line () in 
-    if reponse = "G" || reponse = "g" || reponse = "A" || reponse = "a" || reponse = "M" || reponse = "m" then reponse
-    else raise (Choix_invalide "\n Votre choix est invalide ! \n")
-
+    	if reponse = "G" || reponse = "g" || reponse = "A" || reponse = "a" || reponse = "M" || reponse = "m" 
+				then reponse
+    		else let () = print_string "\n Votre choix est invalide ! \n" in demander_classe ()
 
 
 	end

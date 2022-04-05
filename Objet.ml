@@ -1,7 +1,24 @@
 Random.self_init();;
 
+module type OBJET =
+	sig
 
-module Objet =
+	type contenu = Eponge | Piece | Poulet
+
+	type objet = {quantite : int ; obj : contenu}
+
+	type sac = objet list
+
+	val creer_sac : unit -> sac
+
+	val qte_obj : sac -> contenu -> int
+
+	val modif_sac : sac -> contenu -> int -> sac
+
+end
+;;
+
+module Objet : OBJET =
 	struct
 	type contenu = Eponge | Piece | Poulet
 	type objet = {quantite : int ; obj : contenu}
@@ -32,9 +49,9 @@ module Objet =
 		match sac with
 		|[] -> []
 		|h::t when h.obj=objet -> 
-			if h.quantite+qte<=0 
+			if h.quantite+qte<0 
 				then raise Pas_assez_Objet
 				else {quantite=h.quantite+qte;obj=h.obj}::t
-		|h::t -> h::(modif_sac sac objet qte)
+		|h::t -> h::(modif_sac t objet qte)
 	end
 ;;
