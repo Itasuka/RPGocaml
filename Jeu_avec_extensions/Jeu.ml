@@ -27,7 +27,7 @@ module Jeu : JEU =
 			let xp = Monstre.Monstre.xp_monstre m in
 				let obj = (Monstre.Monstre.get_loot m).obj in
 					let qte = (Monstre.Monstre.get_loot m).quantite in
-				let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_exp_obj_up xp m.loot) in
+				let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_exp_obj_up p xp m.loot) in
 					let lvl_et_perso = Personnage.Personnage.gain_xp p xp in
 						if fst(lvl_et_perso) > p.lvl
 							then let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_level_up (fst(lvl_et_perso))) in
@@ -50,7 +50,7 @@ module Jeu : JEU =
 							let degats_au_perso = Monstre.Monstre.monstre_frapper monstre in
 								let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_attaque_monstre monstre degats_au_perso) in
 									let personnage = Personnage.Personnage.modif_pv p degats_au_perso in
-										if personnage.pv<=0. then raise (Personnage_mort (Affichage.Affichage.phrase_mort_personnage personnage monstre))
+										if personnage.stats_base.stats.pv<=0. then raise (Personnage_mort (Affichage.Affichage.phrase_mort_personnage personnage monstre))
 										else combattre personnage monstre
 										
 	(** Fonction qui fait un attaque surprise d'un monstre aléatoire sur un personnage
@@ -62,7 +62,7 @@ module Jeu : JEU =
 			let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_intialisation_surprise m) in
 			let degats_au_perso = Monstre.Monstre.monstre_frapper m in
 			let perso = Personnage.Personnage.modif_pv p degats_au_perso in
-			if perso.pv<=0. then raise (Personnage_mort (Affichage.Affichage.phrase_mort_personnage perso m)) else combattre perso m
+			if perso.stats_base.stats.pv<=0. then raise (Personnage_mort (Affichage.Affichage.phrase_mort_personnage perso m)) else combattre perso m
 	
 let get_1_3 : 'a*'b*'c -> 'a = fun (a,_,_) -> a
 let get_2_3 : 'a*'b*'c -> 'b = fun (_,a,_) -> a
@@ -80,7 +80,7 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 		let perdu =(Personnage.Personnage.faire_perte_objet perso sacpos) in
 			if (get_1_3 perdu = 0) then perso
 			else 
-				let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_perte_objet (get_1_3 perdu) (get_2_3 perdu)) in
+				let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_perte_objet perso (get_1_3 perdu) (get_2_3 perdu)) in
 					get_3_3 perdu
 	
 	(** Fonction qui effectue la création de personnage
@@ -139,6 +139,12 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 											then let perso = get_2_3 dormi in action_reaction 0 perso monstre
 											else raise (Personnage_mort (Affichage.Affichage.phrase_mort_nuit (get_2_3 dormi) (get_3_3 dormi)))
 									else
+										if action = "E" || action = "e"
+											then let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_perso_change_arme p) in 
+												let choix = Affichage.Affichage.demande_perso_change_arme p in
+													let perso = Personnage.Personnage.change_arme p choix in
+														action_reaction 0 perso monstre
+									else
 										if action = "M" || action = "m"
 											then let mange = Personnage.Personnage.manger p in
 												if fst(mange)=true
@@ -151,7 +157,7 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 														if action = "Q" || action = "q"
 															then raise Quitter_adventure
 															else let () = print_string "\n Votre choix est invalide ! \n" in action_reaction 0 p monstre
-			else
+			else if typ = 1 then
 				let m = Monstre.Monstre.generer_monstre_aleatoire() in
 					let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_evenement_monstre m) in
 						let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_demande_action ()) in
@@ -169,6 +175,9 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 													if reaction = "V" || reaction = "v"
 														then let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_personnage p) in action_reaction 1 p m
 														else let () = print_string "\n Votre choix est invalide ! \n" in action_reaction 1 p m
+				else if typ = 3 then print_string""(*marchand*)
+				else if typ = 4 then print_string""(*village*)
+				else print_string""(*marchand+village*)
 	
 	(** Fonction qui creer la partie et effectue le déroulement de la partie
 	@catch Personnage_mort et affiche le message de mort
