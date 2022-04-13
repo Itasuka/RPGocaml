@@ -116,6 +116,82 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 												else let classe = Personnage.Personnage.Magicien in
 													Personnage.Personnage.creer_personnage nom genre classe
 
+	(** Fonction qui gère les actions chez l'aubergiste
+	@param p : le personnage
+	@return le personnage quand il quitte l'auberge*)
+	let rec action_auberge : Personnage.Personnage.personnage -> Personnage.Personnage.personnage = fun p ->
+		let () = Affichage.Affichage.aff((Affichage.Affichage.phrase_aubergiste())^(Affichage.Affichage.afficher_action_aub p)) in
+			let choix = Affichage.Affichage.demander_action_auberge() in
+				if choix = "A" || choix = "a" then
+					let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_demander_qte_achat()) in
+						let reponse = Affichage.Affichage.demander_qte() in
+							try
+								let perso = Marchand.Marchand.peut_acheter_aub p reponse in action_auberge perso
+							with
+							| Marchand.Marchand.Pas_Assez_DArgent -> let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_pas_assez_argent()) in action_auberge p
+				else if choix = "D" || choix = "d" then
+					let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_dormir_aub()) in
+						let perso = Personnage.Personnage.modif_pv p 10. in action_auberge perso
+				else if choix = "O" || choix = "o" then
+					let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_texte_aub()) in action_auberge p
+				else if choix = "V" || choix = "v" then
+					let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_personnage p) in action_auberge p
+				else p
+
+	(** Fonction qui gère les actions chez le marabout
+	@param p : le personnage
+	@return le personnage quand il part de chez le marabout*)
+	let rec action_marabout : Personnage.Personnage.personnage -> Personnage.Personnage.personnage = fun p ->
+		let mara = Marabout.Marabout.creer_marabout() in
+			let () = Affichage.Affichage.aff((Affichage.Affichage.phrase_init_marabout p mara)^(Affichage.Affichage.afficher_acheter_marabout p mara)) in
+				let choix = Affichage.Affichage.demander_action_marabout() in
+					if choix = "Puissance" || choix = "puissance" then
+						try
+							let perso = Marabout.Marabout.peut_acheter_marabout p mara Potion_Puissance in action_marabout perso
+						with
+						| Marabout.Marabout.Pas_Plus_Dune_Potion -> let () = Affichage.Affichage.aff("Vous ne pouvez pas posséder plus d'un exemplaire par type de potion") in action_marabout p
+						| Marchand.Marchand.Pas_Assez_DArgent -> let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_pas_assez_argent()) in action_marabout p
+					else if choix = "Precision" || choix = "precision" then
+						try
+							let perso = Marabout.Marabout.peut_acheter_marabout p mara Potion_Precision in action_marabout perso
+						with
+						| Marabout.Marabout.Pas_Plus_Dune_Potion -> let () = Affichage.Affichage.aff("Vous ne pouvez pas posséder plus d'un exemplaire par type de potion") in action_marabout p
+						| Marchand.Marchand.Pas_Assez_DArgent -> let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_pas_assez_argent()) in action_marabout p
+					else if choix = "Prediction" || choix = "prediction" then
+						try
+							let perso = Marchand.Marchand.achat_perte_piece p 1 5 in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_avenir()) in action_marabout perso
+						with
+						| Objet.Objet.Pas_assez_Objet -> let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_pas_assez_argent()) in action_marabout p
+					else if choix = "V" || choix = "v" then
+						let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_personnage p) in action_marabout p
+					else p
+
+
+
+	(** Fonction qui prends en comptes les action qu'un joueur peut faire dans le village
+	@param p : le personnage
+	@return le personnage après qu'il ait quitté le village*)
+	let rec action_village : Personnage.Personnage.personnage -> Personnage.Personnage.personnage = fun p ->
+		let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_village_action()) in
+			let action = Affichage.Affichage.demander_action_village() in 
+				if action = "A" || action = "a" then let perso = action_auberge p in action_village perso
+				else if action = "M" || action = "m" then let perso = action_marabout p in action_village perso
+				else if action = "F" || action = "f" then p (*foire*)
+				else if action = "V" || action = "v" then
+					let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_personnage p) in action_village p
+				else p
+
+	(** Fonction qui définit les taux d'apparition des villages/marchand/les deux
+	@return un int correspondant au type de rencontre (typ) dans action_reaction*)
+	let type_rencontre : unit -> int = fun () ->
+		let chance = Random.int 100 in
+		match chance with
+		| n when n<10 -> 2
+		| n when n<25 -> 3
+		| n when n<30 -> 4
+		|_ -> 0
+
+
 	exception Partie_gagnee
 	exception Quitter_adventure
 	(** Fonction qui effectue le déroulement de la partie
@@ -164,20 +240,23 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 							let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_reaction()) in
 								let reaction = Affichage.Affichage.demander_reaction () in
 									if reaction = "A" || reaction = "a"
-										then let perso = combattre p m in action_reaction 0 perso monstre
+										then let perso = combattre p m in action_reaction (type_rencontre()) perso monstre
 										else
 											if reaction = "F" || reaction = "f"
 												then let perso = perte_objet p in let ran = Random.int 100 in
 																																		match ran with
-																																		|n when n < 14 -> let personnage = malheureuse_rencontre perso in action_reaction 0 personnage monstre
-																																		|_ -> action_reaction 0 p monstre
+																																		|n when n < 14 -> let personnage = malheureuse_rencontre perso in action_reaction (type_rencontre()) personnage monstre
+																																		|_ -> action_reaction (type_rencontre()) p monstre
 												else
 													if reaction = "V" || reaction = "v"
 														then let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_personnage p) in action_reaction 1 p m
 														else let () = print_string "\n Votre choix est invalide ! \n" in action_reaction 1 p m
-				else if typ = 3 then print_string""(*marchand*)
-				else if typ = 4 then print_string""(*village*)
-				else print_string""(*marchand+village*)
+				else if typ = 3 then print_string"marchand"(*marchand*)
+				else if typ = 4 then 
+					let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_init_village()) in
+						let action = Affichage.Affichage.demander_action_village() in
+							if (*village*)
+				else print_string"marchand + village"(*marchand+village*)
 	
 	(** Fonction qui creer la partie et effectue le déroulement de la partie
 	@catch Personnage_mort et affiche le message de mort

@@ -197,14 +197,17 @@ module Affichage =
 		let lesac= perso.sac in
 		let lg = longueur_affichage () in 
 		let rec aux : Objet.Objet.sac -> string -> string = fun sac affichage->
-		match sac with
+			match sac with
 		| [] -> affichage
 		| Objet.Objet.{quantite= qte ; obj = ctn}::tail when qte<=0 -> aux tail affichage
-		| Objet.Objet.{quantite= qte ; obj = ctn}::[] ->
-			let bec="|  "^(bien_ecrire_contenu perso qte ctn) in let lg2= String.length bec in affichage^bec^(ligne_espace (lg-lg2-1))^"|"
-		| Objet.Objet.{quantite = qte ; obj = ctn }::o::tail when o.quantite>0 -> let bec="|  "^(bien_ecrire_contenu perso qte ctn) in let lg2= String.length bec in aux (o::tail) (affichage^bec^(ligne_espace (lg-lg2-1))^"|"^"\n")
-		| Objet.Objet.{quantite = qte ; obj = ctn }::tail -> let bec="|  "^(bien_ecrire_contenu perso qte ctn) in let lg2= String.length bec in aux tail (affichage^bec^(ligne_espace (lg-lg2-1))^"|")	
-		in aux lesac ""
+		| Objet.Objet.{quantite= qte ; obj = ctn}::tail ->
+			let bec="|  "^(bien_ecrire_contenu perso qte ctn) in let lg2= String.length bec in aux tail (affichage^"\n"^bec^(ligne_espace (lg-lg2-1))^"|")
+		in aux lesac "" 
+	
+	let bool_afficher_sac_ou_pas : Personnage.Personnage.personnage -> bool = fun perso ->
+		let str = afficher_sac_pas_complet perso in
+		if str = "" then false
+		else true 
 
 	(** Fonction permettant d'afficher la ligne du sac pour l'affichage de l'état du personnage
 	@param perso : le personnage dont on veut afficher l'état
@@ -219,7 +222,8 @@ module Affichage =
 	@param perso : le personnage dont on veut afficher le sac 
 	@return : le string de l'affichage de la partie sac pour l'affichage de l'�tat du personnage*)	
 	let afficher_sac : Personnage.Personnage.personnage->string = fun perso ->
-		(afficher_partie_sac perso)^"\n"^(afficher_sac_pas_complet perso)
+		if (bool_afficher_sac_ou_pas perso)=false then (afficher_partie_sac perso)
+		else (afficher_partie_sac perso)^(afficher_sac_pas_complet perso)
 
 	(**Fonction permettant d'affichage l'�tat du personnage
 	@param perso : le personnage dont on veut afficher l'�tat
@@ -853,7 +857,7 @@ let bjr_marchand : Marchand.Marchand.marchand -> Personnage.Personnage.personnag
 		
 		(** Fonction permettant d'avoir le string de la demande d'action du personnage face à l'aubergiste*)
 		let afficher_action_marchand : unit -> string = fun () ->
-				phrase_demande_action()^"\n(A) Acheter \n(S) Vendre \n(E) Visualiser l'état de votre personnage \n(P) Partir"
+				phrase_demande_action()^"\n(A) Acheter \n(S) Vendre \n(V) Visualiser l'état de votre personnage \n(P) Partir"
 	
 		(** Fonction permettant de d'avoir une liste des reponses possibles de l'utilisateur face au marchand par rapport à un contenu
 		@param ctn : le contenu que l'on veut ajouter a la liste des reponses
@@ -1000,6 +1004,10 @@ let bjr_marchand : Marchand.Marchand.marchand -> Personnage.Personnage.personnag
 	(** Fonction permettant d'avoir le string de la question de la quantite a vendre*)
 	let afficher_demander_qte_vente : unit -> string = fun () -> "\nCombien voulez-vous en vendre ?\n"
 
+	(** Fonction qui dit que l'on n'a pas assez d'argent pour un achat*)
+	let afficher_pas_assez_argent : unit -> string = fun() ->
+		"\nDésolé mais vous n'avez pas les moyens pour cet achat.\n"
+
 	(** Fonction permettant d'avoir une phrase de confirmation d'achat
 	@param perso : le personnage qui a acheté quelque chose
 	@param marchand : le marchand auquel le personnage a acheté quelque chose
@@ -1102,14 +1110,14 @@ let phrase_avenir : unit -> string = fun () ->
 		let demander_action_village :  unit -> string = fun () ->
 			let () = print_string "\n<?> " in
 			let reponse = read_line () in
-					if reponse = "A" || reponse = "a" || reponse = "m" || reponse = "M" || reponse = "p" || reponse = "f" || reponse ="F" || reponse="v" || reponse ="V"
+					if reponse = "A" || reponse = "a" || reponse = "m" || reponse = "M" || reponse = "p" || reponse = "P" || reponse = "f" || reponse ="F" || reponse="v" || reponse ="V"
 							then reponse 
 							else let () = print_string "\n Votre choix est invalide ! \n" in demander_action_village ()
 
 	(** Fonction permettant d'avoir le string de la demande d'action du personnage par rapport au village
 	@return le string de la demande *)
 	let phrase_village_action : unit -> string = fun () ->
-		"Vous entrez dans le village...\nQue voulez-vous faire ?\n\n(A) Aller faire un tour à l'auberge \n (M) Rendre visite au marabout du coin \n (F) Se rendre à la foire pour jouer à des jeux d'argent \n (P) Partir du village \n (V) Visualiser l'état de votre personnage\n"
+		"Vous entrez dans le village...\nQue voulez-vous faire ?\n\n(A) Aller faire un tour à l'auberge \n(M) Rendre visite au marabout du coin \n(F) Se rendre à la foire pour jouer à des jeux d'argent \n(V) Visualiser l'état de votre personnage\n(P) Partir du village "
 			
 		(** Fonction permettant d'afficher ce que peut acheter le personnage chez le marabout
 		@param perso : le personnage
@@ -1122,21 +1130,25 @@ let phrase_avenir : unit -> string = fun () ->
 				| [] -> affichage
 				| {prix = p ; obj = ctn}::[] -> affichage^(match_affichage perso ctn)
 				| {prix = p ; obj = ctn}::tail -> aux tail (affichage^(match_affichage perso ctn)^"\n")
-				in aux stock ((piece_sac perso)^"    Que souhaitez-vous acheter ?\n (Prediction) Faire une prédiction de votre avenir. \n")
+				in let res = aux stock ((piece_sac perso)^"    Que souhaitez-vous acheter/faire ?\n (Prediction) Faire une prédiction de votre avenir pour 5 pièces. \n") in res^"(V) Visualiser l'état de votre personnage\n(P) Partir du village"
+
+		(**Fonction permettant de demander une action par rapport au village
+		@return la reponse de l'utilisateur sous forme d'un string*)
+		let rec demander_action_marabout :  unit -> string = fun () ->
+			let () = print_string "\n<?> " in
+			let reponse = read_line () in
+					if reponse = "Puissance" || reponse = "puissance" || reponse = "Precision" || reponse = "precision" || reponse = "Prediction" || reponse = "prediction" || reponse = "V" || reponse ="v" || reponse="P" || reponse ="p"
+							then reponse 
+							else let () = print_string "\n Votre choix est invalide ! \n" in demander_action_marabout ()
 
 			(**Fonction permettant de demander une action par rapport au village
 		@return la reponse de l'utilisateur sous forme d'un string*)
 		let demander_action_village :  unit -> string = fun () ->
 			let () = print_string "\n<?> " in
 			let reponse = read_line () in
-					if reponse = "A" || reponse = "a" || reponse = "m" || reponse = "M" || reponse = "p" || reponse = "f" || reponse ="F" || reponse="v" || reponse ="V"
+					if reponse = "A" || reponse = "a" || reponse = "m" || reponse = "M" || reponse = "p" || reponse = "P" || reponse = "f" || reponse ="F" || reponse="v" || reponse ="V"
 							then reponse 
 							else let () = print_string "\n Votre choix est invalide ! \n" in demander_action_village ()
-
-	(** Fonction permettant d'avoir le string de la demande d'action du personnage par rapport au village
-	@return le string de la demande *)
-	let phrase_village_action : unit -> string = fun () ->
-		"Vous entrez dans le village... Que voulez-vous faire ?\n (A) Aller faire un tour à l'auberge \n (M) Rendre visite au marabout du coin \n (F) Se rendre à la foire pour jouer à des jeux d'argent \n (P) Partir du village \n (V) Visualiser l'état de votre personnage\n"
 
 	(** Fonction permettant de générer aléatoirement une phrase de d'initialisation du village
 @return le string de la phrase d'initialisation*)    

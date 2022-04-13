@@ -55,14 +55,12 @@ struct
       let perso2 = achat_ajouter_contenu perso1 ctn qte in
     ((perso2),(achat_marchand marchand ctn (-qte)))
 
-  let peut_acheter_aub : Personnage.Personnage.personnage -> marchand -> Objet.Objet.contenu -> int -> Personnage.Personnage.personnage = fun perso marchand ctn qte ->
+  let peut_acheter_aub : Personnage.Personnage.personnage -> int -> Personnage.Personnage.personnage = fun perso qte ->
     let piece_sac = Objet.Objet.qte_obj perso.sac Piece in 
-    let stock = marchand.stock in
-    let leprix = Objet.Objet.prix_obj_stock stock ctn in
-    let prix = leprix*qte in
+    let prix = 4*qte in
     if piece_sac<prix then raise Pas_Assez_DArgent
-    else let perso1 = achat_perte_piece perso qte leprix in
-      let perso2 = achat_ajouter_contenu perso1 ctn qte in
+    else let perso1 = achat_perte_piece perso qte 4 in
+      let perso2 = achat_ajouter_contenu perso1 Poulet qte in
     (perso2)
 
   let peut_vendre : Personnage.Personnage.personnage -> marchand -> Objet.Objet.contenu -> int -> Personnage.Personnage.personnage = fun perso marchand ctn qte ->
