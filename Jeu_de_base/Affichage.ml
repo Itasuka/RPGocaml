@@ -172,15 +172,18 @@ module Affichage : SIGAFFICHAGE =
 	let afficher_sac_pas_complet : Personnage.Personnage.personnage ->string = fun perso ->
 		let lesac= perso.sac in
 		let lg = longueur_affichage perso in 
-		let rec aux = fun sac affichage->
+		let rec aux : Objet.Objet.sac -> string -> string = fun sac affichage->
 		match sac with
-		[] -> affichage
+		| [] -> affichage
 		| Objet.Objet.{quantite= qte ; obj = ctn}::tail when qte<=0 -> aux tail affichage
-		| Objet.Objet.{quantite= qte ; obj = ctn}::[] -> 
-		 let bec="|  "^(bien_ecrire_contenu qte ctn) in let lg2= String.length bec in affichage^bec^(ligne_espace (lg-lg2-1))^"|"
-		| Objet.Objet.{quantite = qte ; obj = ctn }::o::tail when o.quantite>0 -> let bec="|  "^(bien_ecrire_contenu qte ctn) in let lg2= String.length bec in aux (o::tail) (affichage^bec^(ligne_espace (lg-lg2-1))^"|"^"\n")
-		| Objet.Objet.{quantite = qte ; obj = ctn }::tail -> let bec="|  "^(bien_ecrire_contenu qte ctn) in let lg2= String.length bec in aux tail (affichage^bec^(ligne_espace (lg-lg2-1))^"|")
-		in aux lesac ""
+		| Objet.Objet.{quantite= qte ; obj = ctn}::tail ->
+			let bec="|  "^(bien_ecrire_contenu qte ctn) in let lg2= String.length bec in aux tail (affichage^"\n"^bec^(ligne_espace (lg-lg2-1))^"|")
+		in aux lesac "" 
+	
+	let bool_afficher_sac_ou_pas : Personnage.Personnage.personnage -> bool = fun perso ->
+			let str = afficher_sac_pas_complet perso in
+			if str = "" then false
+			else true 
 
 	(** Fonction permettant d'afficher la ligne du sac pour l'affichage de l'état du personnage
 	@param perso : le personnage dont on veut afficher l'état
@@ -195,7 +198,8 @@ module Affichage : SIGAFFICHAGE =
 	@param perso : le personnage dont on veut afficher le sac 
 	@return : le string de l'affichage de la partie sac pour l'affichage de l'état du personnage*)	
 	let afficher_sac : Personnage.Personnage.personnage->string = fun perso ->
-		(afficher_partie_sac perso)^"\n"^(afficher_sac_pas_complet perso)
+		if (bool_afficher_sac_ou_pas perso)=false then (afficher_partie_sac perso)
+		else (afficher_partie_sac perso)^(afficher_sac_pas_complet perso)
 
 	(**Fonction permettant d'affichage l'état du personnage
 	@param perso : le personnage dont on veut afficher l'état
