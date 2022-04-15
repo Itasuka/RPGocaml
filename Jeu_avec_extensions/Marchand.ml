@@ -20,7 +20,12 @@ struct
     |4 ->"Karphour"
     |_ -> ""
     
-    let creer_marchand : Personnage.Personnage.personnage -> marchand = fun perso -> { nom = (nom_marchand ()); stock = (Objet.Objet.creer_stock_marchand()); stock_vente = (Objet.Objet.creer_stock_vente_marchand ())}
+    let creer_stock_marchand : Personnage.Personnage.personnage -> Objet.Objet.stock = fun p ->
+			[{quantite = ((Random.int 5)+2) ; prix = ((Random.int 3)+2); obj = Eponge}
+							 ;{quantite = ((Random.int 5)+2) ; prix = ((Random.int 4)+2); obj = Poulet}
+							 ;(Personnage.Personnage.generer_arme_marchand p)]
+
+    let creer_marchand : Personnage.Personnage.personnage -> marchand = fun perso -> { nom = (nom_marchand ()); stock = (creer_stock_marchand perso); stock_vente = (Objet.Objet.creer_stock_vente_marchand ())}
 
   let achat_ajouter_contenu : Personnage.Personnage.personnage -> Objet.Objet.contenu -> int -> Personnage.Personnage.personnage= fun perso ctn qte ->
       Personnage.Personnage.modif_sac_perso perso ctn qte
@@ -53,7 +58,7 @@ struct
     else if piece_sac<prix then raise Pas_Assez_DArgent
     else let perso1 = achat_perte_piece perso qte leprix in
       let perso2 = achat_ajouter_contenu perso1 ctn qte in
-    ((perso2),(achat_marchand marchand ctn (-qte)))
+    ((perso2),(achat_marchand marchand ctn qte))
 
   let peut_acheter_aub : Personnage.Personnage.personnage -> int -> Personnage.Personnage.personnage = fun perso qte ->
     let piece_sac = Objet.Objet.qte_obj perso.sac Piece in 
@@ -63,14 +68,6 @@ struct
       let perso2 = achat_ajouter_contenu perso1 Poulet qte in
     (perso2)
 
-  let peut_vendre : Personnage.Personnage.personnage -> marchand -> Objet.Objet.contenu -> int -> Personnage.Personnage.personnage = fun perso marchand ctn qte ->
-      let ctn_sac = Objet.Objet.qte_obj perso.sac ctn in
-      let stock = marchand.stock_vente in 
-      let leprix = Objet.Objet.prix_obj_stock_vente stock ctn in
-      if (ctn_sac < qte) then raise Objet.Objet.Pas_assez_Objet
-      else 
-      let perso1 = vente_gain_piece perso qte leprix in
-      vente_perte_contenu perso1 ctn qte
 
 end
 ;;

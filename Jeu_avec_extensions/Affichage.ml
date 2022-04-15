@@ -107,8 +107,20 @@ module Affichage =
 		| Poulet -> laqte^" poulet"
 		| Potion_Precision -> laqte^" potion de precision"
 		| Potion_Puissance -> laqte^" potion de puissance"
-		| Arme a when (Equipement.Equipement.creer_arme a)=perso.armequipe-> let b = Equipement.Equipement.creer_arme a in (Equipement.Equipement.afficher_arme b )^" {specialite : "^(Equipement.Equipement.get_spe b)^"}"^" *equipe*"
+		| Arme a when (Equipement.Equipement.creer_arme a)=perso.armequipe-> let b = Equipement.Equipement.creer_arme a in (Equipement.Equipement.afficher_arme b )^" {specialite : "^(Equipement.Equipement.get_spe b)^"}"^" *equipee*"
 		| Arme a -> let b = Equipement.Equipement.creer_arme a in (Equipement.Equipement.afficher_arme b )^" {specialite : "^(Equipement.Equipement.get_spe b)^"}"
+	
+	(** Fonction permettant de mettre au pluriel si besoin les diff�rents contenus du sac
+    @param qte : la quantite de l'objet du sac
+    @param ctn : le contenu de l'objet du sac*)
+    let bien_ecrire_contenu_0 :Objet.Objet.contenu -> string = fun ctn->
+			match ctn with
+			| Eponge-> "eponge"
+			| Piece -> "piece"
+			| Poulet -> "poulet"
+			| Potion_Precision -> "potion de precision"
+			| Potion_Puissance -> "potion de puissance"
+			| _ -> ""
 	
 	(** Fonction permettant de convertir un nom de monstre en string
 	@param m : le monstre dont on veut convertir le nom
@@ -231,7 +243,7 @@ module Affichage =
 	let afficher_personnage : Personnage.Personnage.personnage -> string = fun perso -> 
 		let lg = longueur_affichage () in
 		let ligne_croix = borner_ligne_croix (ligne_de_tirets lg) in
-		ligne_croix^"\n"^(afficher_identite perso)^"\n"^ligne_croix^"\n"^(afficher_pv perso)^"\n"^ligne_croix^"\n"^(afficher_exp perso)^"\n"^ligne_croix^"\n"^(afficher_sac perso)^"\n"^ligne_croix
+		ligne_croix^"\n"^(afficher_identite perso)^"\n"^ligne_croix^"\n"^(afficher_pv perso)^"\n"^ligne_croix^"\n"^(afficher_exp perso)^"\n"^ligne_croix^"\n"^(afficher_sac perso)^"\n"^ligne_croix^"\n\n"
 	
 
 (** Fonction permettant l'affichage de string
@@ -452,7 +464,7 @@ let phrase_evenement_monstre : Monstre.Monstre.monstre->string = fun monstre ->
 			| 0 -> "\nVous entendez de “bizzz…bizzzz…bizzzzz” autour de vous : c’est "^(un_nom_monstre monstre)^".\n"
 			| 1 -> "\nVous appercevez "^(un_nom_monstre monstre)^" au loin.\n"
 			| 2 -> "\nUn bruit assourdissant passe pret de vous : vous reconnaissez "^(un_nom_monstre monstre)^".\n"
-			| 3 -> "\nVous voyez "^(un_nom_monstre monstre)^"passant entre les arbres.\n"
+			| 3 -> "\nVous voyez "^(un_nom_monstre monstre)^" passant entre les arbres.\n"
 			| _ -> "")
 
 (** Fonction permettant de generer aletoirement une phrase de passage de niveau
@@ -510,14 +522,14 @@ let rec demander_action : unit -> string = fun () ->
 
 
 let afficher_reaction : unit -> string = fun () ->
-	"(A) Attaquer \n(F) Fuir \n(V) Visualiser l'etat de votre personnage "
+	"(A) Attaquer \n(F) Fuir \n(V) Visualiser l'etat de votre personnage \n(Puissance) Prendre une potion de puissance \n(Precision) Prendre une potion de précision"
 
 (** Fonction permmettant de demander a l'utilisateur un choix de réaction par rapport à un évènement
 @return le choix de l'utilisateur*)
 let rec demander_reaction : unit -> string = fun () ->
 	let () = print_string "\n<?> " in 
 	let reponse = read_line () in
-		if reponse = "A" || reponse = "a" || reponse = "F" || reponse = "f" || reponse = "V" || reponse = "v" 
+		if reponse = "A" || reponse = "a" || reponse = "F" || reponse = "f" || reponse = "V" || reponse = "v" || reponse = "Puissance" || reponse = "puissance" || reponse = "Precision" || reponse = "precision" 
 			then reponse 
 			else let () = print_string "\n Votre choix est invalide ! \n" in demander_reaction()
 
@@ -659,63 +671,63 @@ let afficher_change_arme : Personnage.Personnage.personnage -> string  = fun p -
 
 	(** Fonction qui demande une action s'il y a un marchand itinérant
 	@return le string de la demande*)
-	let afficher_action_marchand : unit -> string = fun () ->
+	let afficher_action_annonce_marchand : unit -> string = fun () ->
 	"(C) Continuer votre chemin \n(D) Dormir \n(M) Manger \n(E) Changer d'equipement \n(V) Visualiser l'etat de votre personnage \n(S) Parler au marchand itinerant \n(Q) Quitter l'aventure "
 
 	(** Fonction qui demande au joueur le choix d'action s'il y a un marchand itinérant
 	@return le choix de l'utilisateur*)
-	let rec demander_action_marchand : unit -> string = fun () ->
+	let rec demander_action_annonce_marchand : unit -> string = fun () ->
 		let () = print_string "\n<?> " in
 		let reponse = read_line () in
 			if reponse = "C" || reponse = "c" || reponse = "D" || reponse = "d" || reponse = "E" || reponse = "e" || reponse = "M" || reponse = "m" || reponse = "V" || reponse = "v" || reponse = "S" || reponse = "s" || reponse = "Q" || reponse = "q"  
 				then reponse 
-				else let () = print_string "\n Votre choix est invalide ! \n" in demander_action_marchand ()
+				else let () = print_string "\n Votre choix est invalide ! \n" in demander_action_annonce_marchand ()
 
 	(** Fonction qui demande une action s'il y a un village
 	@return le string de la demande*)
-	let afficher_action_village : unit -> string = fun () ->
+	let afficher_action_annonce_village : unit -> string = fun () ->
 	"(C) Continuer votre chemin \n(D) Dormir \n(M) Manger \n(E) Changer d'equipement \n(V) Visualiser l'etat de votre personnage \n(T) Se rendre au village \n(Q) Quitter l'aventure "
 
 
 	(** Fonction qui demande au joueur le choix d'action s'il y a un village
 	@return le choix de l'utilisateur*)
-	let rec demander_action_village : unit -> string = fun () ->
+	let rec demander_action_annonce_village : unit -> string = fun () ->
 		let () = print_string "\n<?> " in
 		let reponse = read_line () in
 			if reponse = "C" || reponse = "c" || reponse = "D" || reponse = "d" || reponse = "E" || reponse = "e" || reponse = "M" || reponse = "m" || reponse = "V" || reponse = "v" || reponse = "T" || reponse = "t" || reponse = "Q" || reponse = "q"  
 				then reponse 
-				else let () = print_string "\n Votre choix est invalide ! \n" in demander_action_village ()
+				else let () = print_string "\n Votre choix est invalide ! \n" in demander_action_annonce_village ()
 
 	(** Fonction qui demande une action s'il y a un marchand itinérant et un village
 	@return le string de la demande*)
-	let afficher_action_marchand_village : unit -> string = fun () ->
+	let afficher_action_annonce_marchand_village : unit -> string = fun () ->
 	"(C) Continuer votre chemin \n(D) Dormir \n(M) Manger \n(E) Changer d'equipement \n(V) Visualiser l'etat de votre personnage \n(S) Parler au marchand itinerant \n(T) Se rendre au village \n(Q) Quitter l'aventure "
 
 
 	(** Fonction qui demande au joueur le choix d'action s'il y a un marchand itinérant et un village
 	@return le choix de l'utilisateur*)
-	let rec demander_action_marchand_village : unit -> string = fun () ->
+	let rec demander_action_annonce_marchand_village : unit -> string = fun () ->
 		let () = print_string "\n<?> " in
 		let reponse = read_line () in
 			if reponse = "C" || reponse = "c" || reponse = "D" || reponse = "d" || reponse = "E" || reponse = "e" || reponse = "M" || reponse = "m" || reponse = "V" || reponse = "v" || reponse = "S" || reponse = "s" || reponse = "T" || reponse = "t" || reponse = "Q" || reponse = "q"  
 				then reponse 
-				else let () = print_string "\n Votre choix est invalide ! \n" in demander_action_marchand_village ()
+				else let () = print_string "\n Votre choix est invalide ! \n" in demander_action_annonce_marchand_village ()
 
 	
 	(*******************auberge*********************)
 
 let piece_sac : Personnage.Personnage.personnage -> string = fun perso ->
 	let piece = Objet.Objet.qte_obj perso.sac Piece in
-	"Vous avez "^(string_of_int piece)^" "^(bien_ecrire_contenu perso piece Piece)^" dans votre sac.\n" 
+	"Vous avez "^(bien_ecrire_contenu perso piece Piece)^" dans votre sac.\n" 
 
 (** Fonction permettant de générer aléatoirement une phrase au hasard lorsque le personnage dort à l'auberge
 @return le string de la phrase du personnage dormant*)
 let phrase_dormir_aub : unit -> string = fun() ->
 		let lenb = Random.int 3 in
 		match lenb with 
-			| 0 -> "Vous sautez dans le lit, vous endormez comme un bébé et gagnez 10 points de vie"
-			| 1 -> "Vous tombez directement dans le lit et sombrez dans un sommeil profond. Vous gagnez 10 points de vie"
-			| 2 -> "Vous vous enroulez dans les draps du lit et tombez de sommeil. Vous remportez 10 points de vie."
+			| 0 -> "Vous sautez dans le lit, vous endormez comme un bébé et gagnez 10 points de vie.\n\n"
+			| 1 -> "Vous tombez directement dans le lit et sombrez dans un sommeil profond. Vous gagnez 10 points de vie.\n\n"
+			| 2 -> "Vous vous enroulez dans les draps du lit et tombez de sommeil. Vous remportez 10 points de vie.\n\n"
 			|_ -> ""
 
 (** Fonction permettant de générer aléatoirement une question pour demander ce que l'on peut rendre comme service
@@ -733,44 +745,33 @@ let question_service : unit -> string = fun()->
 let phrase_aubergiste : unit-> string = fun() ->
 		let lenb = Random.int 3 in
 		match lenb with 
-			| 0 -> "Bienvenue à vous dans mon auberge ! "^(question_service ())^"\n"
-			| 1 -> "Bonjour et bienvenue dans notre auberge ! "^(question_service ())^"\n"
-			| 2 -> "Bien le bonjour ! Nous avons des lits et de la nourriture à foison ! "^(question_service ())^"\n"
+			| 0 -> "\n\nBienvenue à vous dans mon auberge ! \n"
+			| 1 -> "\n\nBonjour et bienvenue dans notre auberge ! \n"
+			| 2 -> "\n\nBien le bonjour ! Nous avons des lits et de la nourriture à foison ! \n"
 			|_ -> ""
 
 (** Fonction permettant de demander et vérifier l'action que veut faire l'utilisateur dans l'auberge
 @return le string de la réponse de l'utilisateur*)
-let demander_action_auberge :  unit -> string = fun () ->
+let rec demander_action_auberge :  unit -> string = fun () ->
     let () = print_string "\n<?> " in
     let reponse = read_line () in
         if reponse = "A" || reponse = "a" || reponse = "D" || reponse = "d" || reponse = "O" || reponse = "o" || reponse="v" || reponse="V" || reponse ="p" || reponse ="P"
             then reponse 
-            else let () = print_string "\n Votre choix est invalide ! \n" in demander_action ()
+            else let () = print_string "\n Votre choix est invalide ! \n" in demander_action_auberge ()
 
 (** Fonction permettant d'avoir le string de la demande d'action par rapport à l'auberge
 @return le string de la demande d'action*)
 let afficher_action_aub : Personnage.Personnage.personnage -> string = fun perso ->
-    (piece_sac perso)^"(A) Acheter des poulets à 4 Pièces l'unité \n(D) Dormir à l'auberge contre 10 Pièces \n(O) Observer l'auberge \n(V) Visualiser l'état de votre personnage\n (P) Partir \n"
+    (piece_sac perso)^"\n"^question_service()^"\n(A) Acheter des poulets à 4 Pièces l'unité \n(D) Dormir à l'auberge contre 10 Pièces \n(O) Observer l'auberge \n(V) Visualiser l'état de votre personnage\n(P) Partir \n"
 
 (** Fonction permettant de générer aléatoirement une phrase de description de l'auberge
 @return le string de la description de l'auberge *)
 let phrase_texte_aub : unit -> string = fun () ->
 		let lenb = Random.int 3 in
 		match lenb with
-		| 0 -> "Les fenêtres rondes et poussiéreuses de l'auberge laissent passer un maigre rayon de lumière donnant sur le comptoir en chène de l'accueil. \n
-		En tournant la tête vers le bar, on peut appercevoir les quelques habitués du coin accoudés à celui-ci accumulant les chopes de bières. \n
-		L'odeur acre de leur transpiration embaumant la piece et leur nez rougeots trahissent leur ivresse. L'un d'entre eux renverse sa cervoise et ronchonne fortement dans un langage approximatif. \n
-		Un pichet encore humide a la main, l'aubergiste me fait un rapide haussement d'épaule comme pour me faire part de son habitude a tout cela. \n
-		Il attrape le chiffon troué de son épaule et essuie le bro d'un mouvement certain. Eh bien, que voulez-vous ?"
-		| 1 -> " L'accueil est assez chaleureux et chaque voyageur se voit invité à se réchauffer puis a prendre un repas réconfortant tandis qu'à l'extérieur , un vent glaçant continue a souffler. \n
-		L'auberge est très propre et spacieuse, la salle publique est actuellement remplie, et les discussions vont bon train. \n
-		La soirée se passe normalement et sans incidents majeurs, et vous en profiter pour faire connaissance , par le biais de concours de poésie, de chants ou de démonstration de force avec les autres aventuriers. \n
-		 "
-		| 2 -> "L'accueil de l'auberge est vide, vous n'entendez pas un bruit, il n'y aucun visiteur.\n
-		Soudain, une araignée vous tombe sur le visage et vous apercevez des toiles d'araignées et toutes sortes d'insectes dans la pièce.\n 
-		En vous dirigeant vers le bar vous voyez un vieux chat empaillé et la vision de celui ci vous effraie.\n
-		Vous vous sentez mal à l'aise dans ce lieu mais c'était l'auberge la plus proche et vous êtes vraiment extenué.\n
-		Vous retournez après du patron de l'auberge.\n" 
+		| 0 -> "\nLes fenêtres rondes et poussiéreuses de l'auberge laissent passer un maigre rayon de lumière donnant sur le comptoir en chène de l'accueil. \nEn tournant la tête vers le bar, on peut appercevoir les quelques habitués du coin accoudés à celui-ci accumulant les chopes de bières. \nL'odeur acre de leur transpiration embaumant la piece et leur nez rougeots trahissent leur ivresse. L'un d'entre eux renverse sa cervoise et ronchonne fortement dans un langage approximatif. \nUn pichet encore humide a la main, l'aubergiste me fait un rapide haussement d'épaule comme pour me faire part de son habitude a tout cela. \nIl attrape le chiffon troué de son épaule et essuie le bro d'un mouvement certain. Eh bien, que voulez-vous ?"
+		| 1 -> "\nL'accueil est assez chaleureux et chaque voyageur se voit invité à se réchauffer puis a prendre un repas réconfortant tandis qu'à l'extérieur , un vent glaçant continue a souffler. \nL'auberge est très propre et spacieuse, la salle publique est actuellement remplie, et les discussions vont bon train. \nLa soirée se passe normalement et sans incidents majeurs, et vous en profiter pour faire connaissance , par le biais de concours de poésie, de chants ou de démonstration de force avec les autres aventuriers. \n"
+		| 2 -> "\nL'accueil de l'auberge est vide, vous n'entendez pas un bruit, il n'y aucun visiteur.\nSoudain, une araignée vous tombe sur le visage et vous apercevez des toiles d'araignées et toutes sortes d'insectes dans la pièce.\n En vous dirigeant vers le bar vous voyez un vieux chat empaillé et la vision de celui ci vous effraie.\nVous vous sentez mal à l'aise dans ce lieu mais c'était l'auberge la plus proche et vous êtes vraiment extenué.\nVous retournez après du patron de l'auberge.\n" 
 		|_ -> ""
 
 			(**Fonction permettant de faire une phrase indiquant quelle quantité d'un contenu le personnage possède
@@ -778,7 +779,7 @@ let phrase_texte_aub : unit -> string = fun () ->
 		@param qte : la quantite du contenu
 		@return le string de la quantité du contenu*)
 		let ph_qte_ctn : Personnage.Personnage.personnage -> Objet.Objet.contenu -> int -> string = fun perso ctn qte->
-			" ~ Vous avez "^(string_of_int qte)^" "^(bien_ecrire_contenu perso qte ctn)^" dans votre sac ~ \n"
+			" ~ Vous avez "^(bien_ecrire_contenu perso qte ctn)^" dans votre sac ~ \n"
 
 (** Fonction permettant d'avoir le string d'une ligne de stock avec la quantite de ce contenu dans le sac du personnage
 @param bool : true si c'est pour achat, false si c'est pour la vente
@@ -789,12 +790,10 @@ let phrase_texte_aub : unit -> string = fun () ->
 @return le string de la ligne de stock avec la quantite de ce contenu dans le sac du personnage*)
 		let ligne_stock : bool -> int->  int -> Objet.Objet.contenu -> Personnage.Personnage.personnage ->string = fun bool  qte prix ctn perso ->
 			let sac = perso.sac in
-			let laqte = string_of_int qte in
-			let leprix = string_of_int prix in
 			if bool=true then
-				laqte^" "^(bien_ecrire_contenu perso qte ctn)^" : "^leprix^" "^(bien_ecrire_contenu perso prix Piece)^" l'unité."^(ph_qte_ctn perso ctn (Objet.Objet.qte_obj sac ctn) )
+				(bien_ecrire_contenu perso qte ctn)^" :  "^(bien_ecrire_contenu perso prix Piece)^" l'unité."^(ph_qte_ctn perso ctn (Objet.Objet.qte_obj sac ctn) )
 			else 
-				(bien_ecrire_contenu perso 0 ctn)^" : "^leprix^" "^(bien_ecrire_contenu perso prix Piece)^" l'unité."^(ph_qte_ctn perso ctn (Objet.Objet.qte_obj sac ctn) )
+				(bien_ecrire_contenu_0 ctn)^" : "^(bien_ecrire_contenu perso prix Piece)^" l'unité."^(ph_qte_ctn perso ctn (Objet.Objet.qte_obj sac ctn) )
 
 	(** Fonction permettant d'avoir le string de l'affichage du stock du marchand
 	@param marchand : le marchand dont on veut avoir le stock
@@ -830,25 +829,25 @@ let bjr_marchand : Marchand.Marchand.marchand -> Personnage.Personnage.personnag
 		let nom = marchand.nom in
 		let lenb = Random.int 3 in
 		match lenb with
-		| 0 -> "\"Bien le bonjour ! Je suis "^nom^" !\n"^(contenu_stock_vente marchand perso)^"\"\n"^(piece_sac perso)
-		| 1 -> "\"Quel bonheur de voir quelqu'un ici ! Désolé, je ne me suis pas présenté, je suis "^nom^" !\n"^(contenu_stock marchand perso)^"\n"^(contenu_stock_vente marchand perso)^"\"\n"^(piece_sac perso)
-		| 2 -> "\"Bonjour je suis "^nom^" ! J'ai hâte de pouvoir faire affaire avec vous !\n"^(contenu_stock marchand perso)^"\n"^(contenu_stock_vente marchand perso)^"\"\n"^(piece_sac perso)
+		| 0 -> "Bien le bonjour ! Je suis "^nom^" !\n"^(contenu_stock marchand perso)^"\n"^(contenu_stock_vente marchand perso)^"\n"^(piece_sac perso)
+		| 1 -> "Quel bonheur de voir quelqu'un ici ! Désolé, je ne me suis pas présenté, je suis "^nom^" !\n"^(contenu_stock marchand perso)^"\n"^(contenu_stock_vente marchand perso)^"\n"^(piece_sac perso)
+		| 2 -> "Bonjour je suis "^nom^" ! J'ai hâte de pouvoir faire affaire avec vous !\n"^(contenu_stock marchand perso)^"\n"^(contenu_stock_vente marchand perso)^"\n"^(piece_sac perso)
 		|_ -> ""
 	
 (** Fonction permettant de générer aléatoirement une phrase de d'initialisation du marchand
 @param marchand : le marchand dont on veut une phrase d'initialisation
 @return le string de la phrase d'initialisation*)	
-		let phrase_init_marchand : Marchand.Marchand.marchand -> string = fun marchand ->
+		let phrase_init_marchand : unit -> string = fun () ->
 			let lenb = Random.int 3 in
 			match lenb with
-			| 0 -> "Vous appercevez un marchand itinérant non loin de vous. \n"
-			| 1 -> "\"Eh vous là-bas !\" crie quelqu'un derrière vous. Vous vous retournez et reconnaissez un marchand. \n"
-			| 2 -> "Vous attendez une petite voix chantonnant près de vous. C'est un vieux marchand trainant sa marchandise. \n"
+			| 0 -> "\nVous appercevez un marchand itinérant non loin de vous. \n"
+			| 1 -> "\n\"Eh vous là-bas !\" crie quelqu'un derrière vous. Vous vous retournez et reconnaissez un marchand. \n"
+			| 2 -> "\nVous attendez une petite voix chantonnant près de vous. C'est un vieux marchand trainant sa marchandise. \n"
 			|_ -> ""
 		
 		(** Fonction permettant de demander et vérifier l'action que veut faire le personnage face au marchand
 		@return le string de la reponse *)
-		let demander_action_marchand :  unit -> string = fun () ->
+		let rec demander_action_marchand :  unit -> string = fun () ->
 				let () = print_string "\n<?> " in
 				let reponse = read_line () in
 						if reponse = "A" || reponse = "a" || reponse = "s" || reponse = "S" || reponse = "P" || reponse = "p" || reponse = "V" || reponse ="v"
@@ -898,7 +897,7 @@ let bjr_marchand : Marchand.Marchand.marchand -> Personnage.Personnage.personnag
 				| [] -> []
 				| Objet.Objet.{quantite = q ; prix = p ; obj = type_objet_marchand}::tail when q<=0 -> aux tail liste
 				| Objet.Objet.{quantite = q ; prix = p ; obj = type_objet_marchand}::tail -> aux tail liste@(match_lettres type_objet_marchand)
-			in aux stock ["retour";"Retour"]
+			in "retour"::"Retour"::(aux stock [])
 		
 		(** Fonction permettant de récupérer la liste complète des réponses possibles par l'utilisateur face au marchand lors d'une vente
 		@param marchand : le marchand 
@@ -909,7 +908,7 @@ let bjr_marchand : Marchand.Marchand.marchand -> Personnage.Personnage.personnag
 				match stock with
 				| [] -> []
 				| Objet.Objet.{prix = p ; obj = type_objet_marchand}::tail -> aux tail liste@(match_lettres type_objet_marchand)	
-			in aux stock ["retour";"Retour"]
+			in "retour"::"Retour"::(aux stock [])
 
 		(** Fonction permettant de demander et vérifier la réponse de l'utilisateur par rapport a ce qu'il veut acheter
 		@param marchand : le marchand auquel le personnage veut acheter quelque chose
@@ -974,28 +973,28 @@ let bjr_marchand : Marchand.Marchand.marchand -> Personnage.Personnage.personnag
 				| Objet.Objet.{quantite = q ; prix = p ; obj = ctn}::tail when q<=0 -> aux tail affichage
 				| Objet.Objet.{quantite = q ; prix = p ; obj = ctn}::[] -> affichage^(match_affichage perso ctn)^"\n"
 				| Objet.Objet.{quantite = q ; prix = p ; obj = ctn}::tail -> aux tail (affichage^(match_affichage perso ctn)^"\n")
-				in aux stock "    "^(piece_sac perso)^"    Que souhaitez-vous acheter ?\n"
+				in aux stock "\n"^(piece_sac perso)^"\nQue souhaitez-vous acheter ?\n(Retour) Retour\n\n"
 
 			
 		(** Fonction permettant d'afficher ce que peut vendre le personnage au marchand
 		@param perso : le personnage
 		@param marchand : le marchand 
 		@return le string de ce que peut vendre le personnage au marchand*)
-		let afficher_vendre : Personnage.Personnage.personnage -> string = fun perso -> 
-			let sac = perso.sac in
-				let rec aux : Objet.Objet.sac -> string -> string = fun sac affichage ->
-				match sac with
+		let afficher_vendre : Personnage.Personnage.personnage -> Marchand.Marchand.marchand -> string = fun perso marchand ->
+			let stock = marchand.stock_vente in
+			let rec aux = fun stock affichage ->
+				match stock with
 				| [] -> affichage
-				| Objet.Objet.{quantite = qte ; obj = _}::tail when qte<=0 -> aux tail affichage
-				| Objet.Objet.{quantite = qte ; obj = ctn}::[] -> affichage^(match_affichage perso ctn)
-				| Objet.Objet.{quantite = qte ; obj = ctn }::tail -> aux tail (affichage^(match_affichage perso ctn)^"\n")
-				in aux sac "    Que souhaitez-vous vendre ?\n"
-		
+				| Objet.Objet.{prix = p ; obj = ctn}::[] -> affichage^(match_affichage perso ctn)^"\n"
+				| Objet.Objet.{prix = p ; obj = ctn}::tail -> aux tail (affichage^(match_affichage perso ctn)^"\n")
+				in aux stock "\n"^(piece_sac perso)^"\nQue souhaitez-vous vendre ?\n(Retour) Retour\n\n"
+
+
 		(** Fonction permettant de demander la quantite que le personnage souhaite acheter ou vendre
 		@return la quantite que le personnage souhaite acheter*)
 		let rec demander_qte : unit -> int = fun () ->
 			let () = print_string "\n<?>" in
-				try read_int ()
+				try let reponse = read_int () in if reponse<1 then let () = print_string "\nVous devez rentrer un nombre positif.\n" in demander_qte() else reponse
 				with Failure _ -> let () = print_string "\nVous devez rentrer un nombre. \n" in demander_qte ()
 
 		(** Fonction permettant d'avoir le string de la question de la quantite a acheter*)
@@ -1006,7 +1005,7 @@ let bjr_marchand : Marchand.Marchand.marchand -> Personnage.Personnage.personnag
 
 	(** Fonction qui dit que l'on n'a pas assez d'argent pour un achat*)
 	let afficher_pas_assez_argent : unit -> string = fun() ->
-		"\nDésolé mais vous n'avez pas les moyens pour cet achat.\n"
+		"\nDésolé mais vous n'avez pas les moyens pour cet achat.\n\n"
 
 	(** Fonction permettant d'avoir une phrase de confirmation d'achat
 	@param perso : le personnage qui a acheté quelque chose
@@ -1049,36 +1048,10 @@ let bjr_marchand : Marchand.Marchand.marchand -> Personnage.Personnage.personnag
 let phrase_avenir : unit -> string = fun () ->
 	let lenb = Random.int 4 in
 	match lenb with
-	| 0 -> "\"Vous souhaitez donc connaître votre situation future...\n
-	Mais, vous savez, moi je ne crois pas qu’il y ait de bonne ou de mauvaise situation. \n
-	Moi, si je devais résumer ma vie aujourd’hui avec vous, je dirais que c’est d’abord des rencontres. \n
-	Des gens qui m’ont tendu la main, peut-être à un moment où je ne pouvais pas, où j’étais seul chez moi. \n
-	Et c’est assez curieux de se dire que les hasards, les rencontres forgent une destinée… \n
-	Parce que quand on a le goût de la chose, quand on a le goût de la chose bien faite, le beau geste, parfois on ne trouve pas l’interlocuteur en face je dirais, le miroir qui vous aide à avancer. \n
-	Alors ça n’est pas mon cas, comme je disais là, puisque moi au contraire, j’ai pu : et je dis merci à la vie, je lui dis merci, je chante la vie, je danse la vie… je ne suis qu’amour ! \n
-	Et finalement, quand beaucoup de gens aujourd’hui me disent « Mais comment fais-tu pour avoir cette humanité ? », \n
-	et bien je leur réponds très simplement, je leur dis que c’est ce goût de l’amour, ce goût donc qui m’a poussé aujourd’hui à entreprendre une construction mécanique, mais demain qui sait ? \n
-	Peut-être simplement à me mettre au service de la communauté, à faire le don, le don de soi…\""
-	|1 -> "\"Eh bien, encore un curieux ! Asseyez-vous donc ! Je suis un peu pressé mais je veux bien lire votre avenir dans...\"\
-	* Le marabout regarde autour de soit et attrape un torchon miteux * \n
-	\"...ce chiffon ! Ca fera l'affaire ! \n
-	* L'homme ferme les yeux et passe ses mains au dessus du morceau de tissu *
-	Alors bon... mmh, oui, je vois... je vois... une femme... heu non, en fait on dirait un homme... quoique...\n
-	Enfin voilà, il y a quelqu'un, surement une personne que vous connaissez, je ne sais pas moi... \n
-	Ah ! Misère, elle vient de disparaitre ! Comme c'est dommage, elle était juste là... Enfin bon, moi, je n'y peux rien...\n
-	Bon, eh bien je vous laisse... Et n'oubliez pas de me laisser un pourboire en sortant !\""
-	| 2 -> "\"Je n'osais pas vous le dire, mais vous faites bien de me demander cela. Je sens une grande énergie émaner autour de vous !\n
-	Les esprits puissants de nos ancêtres sont accrochés à votre personne. Ils vont apporteront soutient et chance tout au long de votre vie !\n
-	N'oubliez pas que les étoiles vous guideront, ce sont nos aïeuls qui les ont placées là, dans le ciel.\n
-	Votre personne regorge de potentiel, ne vous laissez pas emporter dans le côté obscur..."
-	| 3 -> "* Le marabout sort une boule de cristal de son armoire et rentre dans une transe qui ferait peur à plus d'un. Sa voix change brusquement, on dirait un autre homme *\n
-	\"Il doit avoir l’engagement le plus profond, l’esprit le plus sérieux. \n
-	Celui-ci, depuis très longtemps je l’observe et toute sa vie, il a regardé vers l’avenir, vers l’horizon. \n
-	Jamais l’esprit là où il était, hum! A ce qu’il faisait. \n
-	La peur est le chemin vers le côté obscur : la peur mène à la colère, la colère mène à la haine, la haine … mène à la souffrance. 
-	Un grand guerrier ? Personne par la guerre ne devient grand. \n
-	* Le marabout reprend ses esprits et me regarde * \n
-	\" Voilà, j'espère que ce qu'il vous aura dit vous guidera... "
+	| 0 -> "\n\"Vous souhaitez donc connaître votre situation future...\nMais, vous savez, moi je ne crois pas qu’il y ait de bonne ou de mauvaise situation. \nMoi, si je devais résumer ma vie aujourd’hui avec vous, je dirais que c’est d’abord des rencontres. \nDes gens qui m’ont tendu la main, peut-être à un moment où je ne pouvais pas, où j’étais seul chez moi. \nEt c’est assez curieux de se dire que les hasards, les rencontres forgent une destinée… \nParce que quand on a le goût de la chose, quand on a le goût de la chose bien faite, le beau geste, parfois on ne trouve pas l’interlocuteur en face je dirais, le miroir qui vous aide à avancer. \nAlors ça n’est pas mon cas, comme je disais là, puisque moi au contraire, j’ai pu : et je dis merci à la vie, je lui dis merci, je chante la vie, je danse la vie… je ne suis qu’amour ! \nEt finalement, quand beaucoup de gens aujourd’hui me disent « Mais comment fais-tu pour avoir cette humanité ? », \net bien je leur réponds très simplement, je leur dis que c’est ce goût de l’amour, ce goût donc qui m’a poussé aujourd’hui à entreprendre une construction mécanique, mais demain qui sait ? \nPeut-être simplement à me mettre au service de la communauté, à faire le don, le don de soi…\"\n\n"
+	|1 -> "\n\"Eh bien, encore un curieux ! Asseyez-vous donc ! Je suis un peu pressé mais je veux bien lire votre avenir dans...\"\n\n* Le marabout regarde autour de soit et attrape un torchon miteux * \n\n\"...ce chiffon ! Ca fera l'affaire ! \"\n* L'homme ferme les yeux et passe ses mains au dessus du morceau de tissu *\"Alors bon... mmh, oui, je vois... je vois... une femme... heu non, en fait on dirait un homme... quoique...\nEnfin voilà, il y a quelqu'un, surement une personne que vous connaissez, je ne sais pas moi... \nAh ! Misère, elle vient de disparaitre ! Comme c'est dommage, elle était juste là... Enfin bon, moi, je n'y peux rien...\nBon, eh bien je vous laisse... Et n'oubliez pas de me laisser un pourboire en sortant !\"\n\n"
+	| 2 -> "\n\"Je n'osais pas vous le dire, mais vous faites bien de me demander cela. Je sens une grande énergie émaner autour de vous !\nLes esprits puissants de nos ancêtres sont accrochés à votre personne. Ils vont apporteront soutient et chance tout au long de votre vie !\nN'oubliez pas que les étoiles vous guideront, ce sont nos aïeuls qui les ont placées là, dans le ciel.\nVotre personne regorge de potentiel, ne vous laissez pas emporter dans le côté obscur...\"\n\n"
+	| 3 -> "\n* Le marabout sort une boule de cristal de son armoire et rentre dans une transe qui ferait peur à plus d'un. Sa voix change brusquement, on dirait un autre homme *\n\"Il doit avoir l’engagement le plus profond, l’esprit le plus sérieux. \nCelui-ci, depuis très longtemps je l’observe et toute sa vie, il a regardé vers l’avenir, vers l’horizon. \nJamais l’esprit là où il était, hum! A ce qu’il faisait. \nLa peur est le chemin vers le côté obscur : la peur mène à la colère, la colère mène à la haine, la haine … mène à la souffrance. Un grand guerrier ? Personne par la guerre ne devient grand. \"\n* Le marabout reprend ses esprits et me regarde * \n\"Voilà, j'espère que ce qu'il vous aura dit vous guidera...\"\n\n"
 	| _ -> ""
 
 	(**Fonction permettant d'afficher le stock du marabout
@@ -1090,9 +1063,9 @@ let phrase_avenir : unit -> string = fun () ->
 			let rec aux : Objet.Objet.stock_vente -> string -> string = fun vente affichage ->
 			match vente with
 			| [] -> affichage
-			| {prix = prix ; obj = ctn}::[] -> affichage^(ligne_stock false 0 prix ctn perso)^"\n"
+			| {prix = prix ; obj = ctn}::[] -> affichage^(ligne_stock false 0 prix ctn perso)
 			| {prix = prix ; obj = ctn}::tail -> aux tail (affichage^(ligne_stock false 0 prix ctn perso)^"\n")
-			in aux vente "Faire une prédiction de votre avenir.\n Acheter une potion :\n       Vous ne pouvez achetez une potion pour améliorer votre puissance ou votre précision seulement si vous n'en possédez pas déjà.\n       Celles-ci pourront vous apporter des bonus avant un combat mais attention, ces potions, si elles sont mal préparées, pourront vous faire perdre en efficacité.\n"
+			in aux vente " Faire une prédiction de votre avenir.\n Acheter une potion :\n       Vous ne pouvez achetez une potion pour améliorer votre puissance ou votre précision seulement si vous n'en possédez pas déjà.\n       Celles-ci pourront vous apporter des bonus avant un combat mais attention, ces potions, si elles sont mal préparées, pourront vous faire perdre en efficacité.\n\n"
 
 	(** Fonction permettant de générer aléatoirement une phrase d'initialisation du marabout
 	@param mara : le marabout
@@ -1107,7 +1080,7 @@ let phrase_avenir : unit -> string = fun () ->
 
 		(**Fonction permettant de demander une action par rapport au village
 		@return la reponse de l'utilisateur sous forme d'un string*)
-		let demander_action_village :  unit -> string = fun () ->
+		let rec demander_action_village :  unit -> string = fun () ->
 			let () = print_string "\n<?> " in
 			let reponse = read_line () in
 					if reponse = "A" || reponse = "a" || reponse = "m" || reponse = "M" || reponse = "p" || reponse = "P" || reponse = "f" || reponse ="F" || reponse="v" || reponse ="V"
@@ -1117,7 +1090,7 @@ let phrase_avenir : unit -> string = fun () ->
 	(** Fonction permettant d'avoir le string de la demande d'action du personnage par rapport au village
 	@return le string de la demande *)
 	let phrase_village_action : unit -> string = fun () ->
-		"Vous entrez dans le village...\nQue voulez-vous faire ?\n\n(A) Aller faire un tour à l'auberge \n(M) Rendre visite au marabout du coin \n(F) Se rendre à la foire pour jouer à des jeux d'argent \n(V) Visualiser l'état de votre personnage\n(P) Partir du village "
+		"Vous êtes dans le village...\nQue voulez-vous faire ?\n\n(A) Aller faire un tour à l'auberge \n(M) Rendre visite au marabout du coin \n(F) Se rendre à la foire pour jouer à des jeux d'argent \n(V) Visualiser l'état de votre personnage\n(P) Partir du village "
 			
 		(** Fonction permettant d'afficher ce que peut acheter le personnage chez le marabout
 		@param perso : le personnage
@@ -1130,7 +1103,7 @@ let phrase_avenir : unit -> string = fun () ->
 				| [] -> affichage
 				| {prix = p ; obj = ctn}::[] -> affichage^(match_affichage perso ctn)
 				| {prix = p ; obj = ctn}::tail -> aux tail (affichage^(match_affichage perso ctn)^"\n")
-				in let res = aux stock ((piece_sac perso)^"    Que souhaitez-vous acheter/faire ?\n (Prediction) Faire une prédiction de votre avenir pour 5 pièces. \n") in res^"(V) Visualiser l'état de votre personnage\n(P) Partir du village"
+				in let res = aux stock ((piece_sac perso)^"Que souhaitez-vous acheter/faire ?\n(Prediction) Faire une prédiction de votre avenir pour 5 pièces. \n") in res^"\n(V) Visualiser l'état de votre personnage\n(P) Partir"
 
 		(**Fonction permettant de demander une action par rapport au village
 		@return la reponse de l'utilisateur sous forme d'un string*)
@@ -1141,23 +1114,15 @@ let phrase_avenir : unit -> string = fun () ->
 							then reponse 
 							else let () = print_string "\n Votre choix est invalide ! \n" in demander_action_marabout ()
 
-			(**Fonction permettant de demander une action par rapport au village
-		@return la reponse de l'utilisateur sous forme d'un string*)
-		let demander_action_village :  unit -> string = fun () ->
-			let () = print_string "\n<?> " in
-			let reponse = read_line () in
-					if reponse = "A" || reponse = "a" || reponse = "m" || reponse = "M" || reponse = "p" || reponse = "P" || reponse = "f" || reponse ="F" || reponse="v" || reponse ="V"
-							then reponse 
-							else let () = print_string "\n Votre choix est invalide ! \n" in demander_action_village ()
-
+			
 	(** Fonction permettant de générer aléatoirement une phrase de d'initialisation du village
 @return le string de la phrase d'initialisation*)    
 let phrase_init_village : unit -> string = fun () ->
 	let lenb = Random.int 3 in
 	match lenb with
-	| 0 -> "Vous appercevez des lumières au haut d'une colline : c'est un Village. \n"
-	| 1 -> "Vous entendez des bruits et des cris de forrains derrière une forêt : c'est un Village. \n"
-	| 2 -> "Vous croisez un petit panneau vétuste sur le bord d'un chemin : il indique qu'un village se trouve non loin de vous.\n"
+	| 0 -> "\nVous appercevez des lumières au haut d'une colline : c'est un Village. \n"
+	| 1 -> "\nVous entendez des bruits et des cris de forrains derrière une forêt : c'est un Village. \n"
+	| 2 -> "\nVous croisez un petit panneau vétuste sur le bord d'un chemin : il indique qu'un village se trouve non loin de vous.\n"
 	| _ -> ""
 
 	let phrase_potion_bu : string -> int -> string = fun str nb ->
@@ -1165,26 +1130,32 @@ let phrase_init_village : unit -> string = fun () ->
 			if str = "acc" then 
 					if nb>0 then
 					(match lenb with
-					| 0 -> "Vous avez pris une Potion de Précision et celle-ci vous apporte "^(string_of_int nb)^" pourcents de précision.\n"
-					| 1 -> "Vous buvez votre Potion de Précision. Elle vous fait gagner "^(string_of_int nb)^" pourcents de précision. \n"
+					| 0 -> "\nVous avez pris une Potion de Précision et celle-ci vous apporte "^(string_of_int nb)^" pourcents de précision.\n"
+					| 1 -> "\nVous buvez votre Potion de Précision. Elle vous fait gagner "^(string_of_int nb)^" pourcents de précision. \n"
 					| _ -> "")
 					else
 					(match lenb with
-					| 0 -> "Vous avez pris une Potion de Précision mais le marabout qui l'a préparé s'est trompé de recette. La potion vous retire "^(string_of_int (abs nb))^" pourcents de précision.\n"
-					| 1 -> "Vous vous empoissonez avec la Potion ! Celle-ci vous fait perdre "^(string_of_int (abs nb))^" pourcents de précision.\n"
+					| 0 -> "\nVous avez pris une Potion de Précision mais le marabout qui l'a préparé s'est trompé de recette. La potion vous retire "^(string_of_int (abs nb))^" pourcents de précision.\n"
+					| 1 -> "\nVous vous empoissonez avec la Potion ! Celle-ci vous fait perdre "^(string_of_int (abs nb))^" pourcents de précision.\n"
 					| _ -> "")
 			else 
 					if nb>0 then
 					(match lenb with
-					| 0 -> "Vous avez pris une Potion de Puissance et celle-ci vous apporte "^(string_of_int nb)^" points de puissance.\n"
-					| 1 -> "Vous buvez votre Potion de Puissance. Elle vous fait gagner "^(string_of_int nb)^" points de puissance. \n"
+					| 0 -> "\nVous avez pris une Potion de Puissance et celle-ci vous apporte "^(string_of_int nb)^" points de puissance.\n"
+					| 1 -> "\nVous buvez votre Potion de Puissance. Elle vous fait gagner "^(string_of_int nb)^" points de puissance. \n"
 					| _ -> "")
 					else 
 					(match lenb with
-					| 0 -> "Vous avez pris une Potion de Puissance mais le marabout qui l'a préparé s'est trompé de recette. La potion vous retire "^(string_of_int (abs nb))^" points de puissance.\n"
-					| 1 -> "Vous vous empoissonez avec la Potion ! Celle-ci vous fait perdre "^(string_of_int (abs nb))^" points de puissance.\n"
+					| 0 -> "\nVous avez pris une Potion de Puissance mais le marabout qui l'a préparé s'est trompé de recette. La potion vous retire "^(string_of_int (abs nb))^" points de puissance.\n"
+					| 1 -> "\nVous vous empoissonez avec la Potion ! Celle-ci vous fait perdre "^(string_of_int (abs nb))^" points de puissance.\n"
 					| _ -> "")
+
+	(** Fonction qui affiche le fait que l'effet des potions bu sont estompé
+	@return le string à afficher*)
+	let afficher_effet_pot_estompe : unit -> string = fun () ->
+		"\nLes effets des potions se sont estompés\n"
 
 
 	end
+
 ;;

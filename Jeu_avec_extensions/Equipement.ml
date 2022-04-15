@@ -27,11 +27,11 @@ module Equipement =
   type arme = G of arme_guerrier | A of arme_archer | M of arme_magicien
 
   let stats_base : unit -> stats = fun () -> {pv = 0.; atk = 0; def = 0; acc = 0}
-  let stats_atk : unit -> stats = fun () -> {pv = -5.; atk = 10; def = -5; acc = 5}
-  let stats_pv : unit -> stats = fun () -> {pv = 20.; atk = 2; def = -3; acc = 5}
-  let stats_def : unit -> stats = fun () -> {pv = 7.; atk = -3; def = 3; acc = 10}
-  let stats_acc : unit -> stats = fun () -> {pv = 0.; atk = -2; def = -2; acc = 25}
-  let stats_leg : unit -> stats = fun () -> {pv = 30.; atk = 15; def = 5; acc = 30}
+  let stats_atk : unit -> stats = fun () -> {pv = 0.; atk = 5; def = -2; acc = 5}
+  let stats_pv : unit -> stats = fun () -> {pv = 20.; atk = 2; def = -2; acc = 5}
+  let stats_def : unit -> stats = fun () -> {pv = 7.; atk = -1; def = 1; acc = -10}
+  let stats_acc : unit -> stats = fun () -> {pv = 0.; atk = -1; def = -1; acc = 20}
+  let stats_leg : unit -> stats = fun () -> {pv = 20.; atk = 5; def = 1; acc = 20}
 
   let afficher_arme_guerrier : type_arme_guerrier -> string = fun a ->
     match a with

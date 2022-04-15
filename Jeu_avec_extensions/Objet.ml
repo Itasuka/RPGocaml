@@ -104,10 +104,6 @@ module Objet  =
 			|[] -> 0 
 			|o::t when o.obj=obj -> o.prix
 			|_::t -> prix_obj_stock_vente t obj
-	
-		let creer_stock_marchand : unit -> stock = 
-				fun () -> [{quantite = ((Random.int 5)+2) ; prix = ((Random.int 3)+2); obj = Eponge}
-							 ;{quantite = ((Random.int 5)+2) ; prix = ((Random.int 4)+2); obj = Poulet}]
 		
 		let creer_stock_vente_marchand : unit -> stock_vente =
 				fun () -> [{prix = ((Random.int 3)+1)  ;  obj = Eponge}
@@ -121,10 +117,10 @@ module Objet  =
 				match stck with
 					|[] -> []
 					|h::t when h.obj=objet -> 
-					if h.quantite+qte<=0 
+					if h.quantite+qte<0 
 						then raise Pas_assez_Objet
 						else {quantite=h.quantite+qte;prix=h.prix;obj=h.obj}::t
-					|h::t -> h::(modif_stock stck objet qte)
+					|h::t -> h::(modif_stock t objet qte)
 
 
 	end

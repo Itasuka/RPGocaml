@@ -31,6 +31,10 @@ module type PERSONNAGE =
 
 	val reset_stats_pot : personnage -> personnage
 
+	val generer_arme_marchand : personnage -> Objet.Objet.objet_marchand
+
+	val  bonus : personnage -> Objet.Objet.contenu -> int*personnage
+
 end
 ;;
 
@@ -169,7 +173,7 @@ let faire_perte_objet : personnage -> Objet.Objet.sac -> int*Objet.Objet.contenu
 	@param t : le type de l'arme en string
 	@return le personnage qui a changé d'arme*)
 	let change_arme : personnage -> string -> personnage = fun p t ->
-		{nom=p.nom;genre=p.genre;classe=p.classe;lvl=p.lvl;exp=p.exp;stats_base=p.stats_base;sac=p.sac;armequipe=(convertit_string_en_arme p t);statBonusPot=p.statBonusPot}
+		{nom=p.nom;genre=p.genre;classe=p.classe;lvl=p.lvl;exp=p.exp;stats_base={stats={pv=min p.stats_base.stats.pv (p.stats_base.pv_max+.(Equipement.Equipement.get_stats(convertit_string_en_arme p t)).pv);atk=p.stats_base.stats.atk;def=p.stats_base.stats.def;acc=p.stats_base.stats.acc};pv_max=p.stats_base.pv_max};sac=p.sac;armequipe=(convertit_string_en_arme p t);statBonusPot=p.statBonusPot}
 
 	(** Fonction qui donne les bonus/malus d'une potion au personnage
 	@param p : le personnage
@@ -180,7 +184,7 @@ let faire_perte_objet : personnage -> Objet.Objet.sac -> int*Objet.Objet.contenu
 		if s = "atk" then
 			{nom=p.nom;genre=p.genre;classe=p.classe;lvl=p.lvl;exp=p.exp;stats_base=p.stats_base;sac=p.sac;armequipe=p.armequipe;statBonusPot=Equipement.Equipement.{pv=0.;atk=i;def=0;acc=0}}
 		else
-			{nom=p.nom;genre=p.genre;classe=p.classe;lvl=p.lvl;exp=p.exp;stats_base=p.stats_base;sac=p.sac;armequipe=p.armequipe;statBonusPot=Equipement.Equipement.{pv=0.;atk=i;def=0;acc=0}}
+			{nom=p.nom;genre=p.genre;classe=p.classe;lvl=p.lvl;exp=p.exp;stats_base=p.stats_base;sac=p.sac;armequipe=p.armequipe;statBonusPot=Equipement.Equipement.{pv=0.;atk=p.statBonusPot.atk;def=0;acc=i}}
 
 
 	(** Fonction qui permet de reset les stats bonus des potions
@@ -234,19 +238,19 @@ let faire_perte_objet : personnage -> Objet.Objet.sac -> int*Objet.Objet.contenu
 						let chance = Random.int (List.length obj_obtenable) in Objet.Objet.{quantite = 1; prix = 250; obj = (List.nth obj_obtenable chance)}
 
 
-    let bonus : personnage -> Objet.Objet.contenu -> int*string*personnage = fun perso ctn ->
+    let bonus : personnage -> Objet.Objet.contenu -> int*personnage = fun perso ctn ->
         let lenb = Random.int 100 in
-        if ctn=Potion_Puissance then 
-            (if lenb<5 then (-10,"atk",(modif_stats_pot perso "atk" (-10)))
-            else (if lenb<25 then (-5,"atk",(modif_stats_pot perso "atk" (-5)))
-                        else (if lenb<65 then (5,"atk",(modif_stats_pot perso "atk" (5)))
-                                    else (if lenb<90 then (10,"atk",(modif_stats_pot perso "atk" (10)))
-                                                else (15,"atk",(modif_stats_pot perso "atk" (15)))))))
-        else (if lenb<5 then (-2,"acc",(modif_stats_pot perso "acc" (-2)))
-                else (if lenb<25 then (-1,"acc",(modif_stats_pot perso "acc" (-1)))
-                            else (if lenb<65 then (1,"acc",(modif_stats_pot perso "acc" (1)))
-                                        else (if lenb<90 then (2,"acc",(modif_stats_pot perso "acc" (2)))
-                                                    else (3,"acc",(modif_stats_pot perso "atk" (3)))))))
+        if ctn=Potion_Precision then 
+            (if lenb<5 then (-10,(modif_stats_pot perso "acc" (-10)))
+            else (if lenb<25 then (-5,(modif_stats_pot perso "acc" (-5)))
+                        else (if lenb<65 then (5,(modif_stats_pot perso "acc" (5)))
+                                    else (if lenb<90 then (10,(modif_stats_pot perso "acc" (10)))
+                                                else (15,(modif_stats_pot perso "acc" (15)))))))
+        else (if lenb<5 then (-2,(modif_stats_pot perso "atk" (-2)))
+                else (if lenb<25 then (-1,(modif_stats_pot perso "atk" (-1)))
+                            else (if lenb<65 then (1,(modif_stats_pot perso "atk" (1)))
+                                        else (if lenb<90 then (2,(modif_stats_pot perso "atk" (2)))
+                                                    else (3,(modif_stats_pot perso "atk" (3)))))))
 		
 	end
 ;;
