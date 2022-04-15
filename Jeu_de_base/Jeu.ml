@@ -1,17 +1,23 @@
+(*----------------------------------------------------------SIGNATURE----------------------------------------------------------*)
+
 module type JEU = 
 	sig
 
+	(* Fonction qui créer la partie et effectue le déroulement de la partie*)
 	val jouer : unit -> unit
 
 end
 ;;
 
+(*------------------------------------------------------------MODULE----------------------------------------------------------------*)
+
 module Jeu : JEU =
 	struct
 
-		(** Fonction permettant de faire gagner 4pv au perso si il reussit a dormir ou de le tuer sinon
+	(** Fonction permettant de faire gagner 4pv au personnage si il reussit à dormir ou de le tuer sinon
+	@author Noemie L
 	@param perso : le personnage que l'on souhaite faire dormir
-	@return un tuple avec true si il a reussit a dormir et false sinon avec en plus l'etat du perso et le monstre genere*)
+	@return un tuple avec true si il a reussit a dormir et false sinon avec en plus l'état du personnage et le monstre génére*)
 	let dormir : Personnage.Personnage.personnage->bool*Personnage.Personnage.personnage*Monstre.Monstre.monstre = fun perso ->
 		let lenb=Random.int 20 in
 		if lenb>1 then let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_nuit perso) in (true,Personnage.Personnage.modif_pv perso (4.),Monstre.Monstre.generer_monstre_aleatoire())
@@ -19,6 +25,7 @@ module Jeu : JEU =
 
 		
 	(** Fonction qui effectue le déroulement de la victoire du joueurs lors d'un combat
+	@author Nicolas S
 	@param p : le personnage qui a vaincu
 	@param m : le monstre qui a été vaincu
 	@return le personnage avec l'xp gagné*)
@@ -36,7 +43,9 @@ module Jeu : JEU =
 
 	
 	exception Personnage_mort of string
-	(** Fonction qui fait combattre un personnage et un monstre jusqu'à la mort de l'un d'eu
+
+	(** Fonction qui fait combattre un personnage et un monstre jusqu'à la mort de l'un d'eux
+	@author Nicolas S
 	@param p : le personnage
 	@param m : le monstre
 	@return le personnage s'il gagne
@@ -54,6 +63,7 @@ module Jeu : JEU =
 										else combattre personnage monstre
 										
 	(** Fonction qui fait un attaque surprise d'un monstre aléatoire sur un personnage
+	@author Nicolas S
 	@param p : le personnage
 	@return le personnage s'il gagne
 	@raise Personnage_mort si le monstre gagne*)
@@ -64,13 +74,26 @@ module Jeu : JEU =
 			let perso = Personnage.Personnage.modif_pv p degats_au_perso in
 			if perso.pv<=0. then raise (Personnage_mort (Affichage.Affichage.phrase_mort_personnage perso m)) else combattre perso m
 	
-let get_1_3 : 'a*'b*'c -> 'a = fun (a,_,_) -> a
-let get_2_3 : 'a*'b*'c -> 'b = fun (_,a,_) -> a
-let get_3_3 : 'a*'b*'c -> 'c = fun (_,_,a) -> a
+	(** Fonction qui récupère le 1er élement d'un tuple de 3e
+	@author Nicolas S
+	@param tuple de 3 éléments
+	@return le 1er élément du tuple*)
+	let get_1_3 : 'a*'b*'c -> 'a = fun (a,_,_) -> a
+	(** Fonction qui récupère le 2e élement d'un tuple de 3e
+	@author Nicolas S
+	@param tuple de 3 éléments
+	@return le 2e élément du tuple*)
+	let get_2_3 : 'a*'b*'c -> 'b = fun (_,a,_) -> a
+	(** Fonction qui récupère le 3e élement d'un tuple de 3e
+	@author Nicolas S
+	@param tuple de 3 éléments
+	@return le 3e élément du tuple*)
+	let get_3_3 : 'a*'b*'c -> 'c = fun (_,_,a) -> a
 
-	(** Fonction permettant de d'afficher et de recuperer le nouvel etat du personnage
+(** Fonction permettant de d'afficher et de récuperer le nouvel état du personnage
+@author Nicolas S
 @param perso : le personnage dont on veut potentiellement faire perdre des objets 
-@return le nouvel etat du personnage*)
+@return le nouvel état du personnage*)
 let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.personnage = fun perso ->
 	let pos = (Personnage.Personnage.peut_perdre_objet perso) in
 	let boolpos = fst(pos) in
@@ -84,6 +107,7 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 					get_3_3 perdu
 	
 	(** Fonction qui effectue la création de personnage
+	@author Nicolas S
 	@return le nouveau personnage selon les choix de l'utilisateur*)
 	let creer_partie : unit -> Personnage.Personnage.personnage = fun () ->
 		let () = Affichage.Affichage.aff(Affichage.Affichage.debut_partie()) in
@@ -119,6 +143,7 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 	exception Partie_gagnee
 	exception Quitter_adventure
 	(** Fonction qui effectue le déroulement de la partie
+	@author Nicolas S
 	@param typ : le type de rencontre (0 pour action et 1 pour une réaction)
 	@param p : le personnage de l'utilisateur
 	@param monstre : le monstre que le joueur peut potentiellement rencontrer en combat
@@ -131,7 +156,8 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 				let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_action()) in
 					let action = Affichage.Affichage.demander_action ()  in
 						if action = "C" || action = "c"
-							then action_reaction 1 p monstre
+							then 	let m = Monstre.Monstre.generer_monstre_aleatoire() in 
+							let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_evenement_monstre m) in action_reaction 1 p m
 							else 
 								if action = "D" || action = "d"
 									then let dormi = dormir p in
@@ -152,28 +178,27 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 															then raise Quitter_adventure
 															else let () = print_string "\n Votre choix est invalide ! \n" in action_reaction 0 p monstre
 			else
-				let m = Monstre.Monstre.generer_monstre_aleatoire() in
-					let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_evenement_monstre m) in
-						let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_demande_action ()) in
-							let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_reaction()) in
-								let reaction = Affichage.Affichage.demander_reaction () in
-									if reaction = "A" || reaction = "a"
-										then let perso = combattre p m in action_reaction 0 perso monstre
+				let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_demande_action ()) in
+					let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_reaction()) in
+						let reaction = Affichage.Affichage.demander_reaction () in
+							if reaction = "A" || reaction = "a"
+								then let perso = combattre p monstre in action_reaction 0 perso monstre
+								else
+									if reaction = "F" || reaction = "f"
+										then let perso = perte_objet p in let ran = Random.int 100 in
+																																match ran with
+																																|n when n < 14 -> let personnage = malheureuse_rencontre perso in action_reaction 0 personnage monstre
+																																|_ -> action_reaction 0 p monstre
 										else
-											if reaction = "F" || reaction = "f"
-												then let perso = perte_objet p in let ran = Random.int 100 in
-																																		match ran with
-																																		|n when n < 14 -> let personnage = malheureuse_rencontre perso in action_reaction 0 personnage monstre
-																																		|_ -> action_reaction 0 p monstre
-												else
-													if reaction = "V" || reaction = "v"
-														then let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_personnage p) in action_reaction 1 p m
-														else let () = print_string "\n Votre choix est invalide ! \n" in action_reaction 1 p m
+											if reaction = "V" || reaction = "v"
+												then let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_personnage p) in action_reaction 1 p monstre
+												else let () = print_string "\n Votre choix est invalide ! \n" in action_reaction 1 p monstre
 	
-	(** Fonction qui creer la partie et effectue le déroulement de la partie
+	(** Fonction qui créer la partie et effectue le déroulement de la partie
+	@author Nicolas S
 	@catch Personnage_mort et affiche le message de mort
 	@catch Quitter_adventure et affiche un message d'au revoir au personnage
-	@catch Partie_gagnee et affiche un message pour félicité le personnage d'avoir fini le jeu*)
+	@catch Partie_gagnee et affiche un message pour féliciter le personnage d'avoir fini le jeu*)
 	let jouer : unit -> unit = fun () ->
 		let p = creer_partie () in
 			try
