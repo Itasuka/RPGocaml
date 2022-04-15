@@ -82,7 +82,7 @@ module Monstre : MONSTRE =
 	let xp_monstre : monstre -> int = fun m ->
 		match m.monstre with
 		|Golem -> 8
-		|Sanglier -> 4
+		|Sanglier -> 40000
 		|Moustiques n -> 2+(1*(n-1))
 		
 

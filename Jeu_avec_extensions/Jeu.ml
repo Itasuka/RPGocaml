@@ -144,41 +144,41 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 								if acheter = "Eponge" || acheter = "eponge" then
 									let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_demander_qte_achat()) in
 									let nombre = Affichage.Affichage.demander_qte() in
-									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m Eponge nombre) in action_marchand perso marchand
+									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m Eponge nombre) in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vente_marchand_valide p m Eponge nombre) in action_marchand perso marchand
 								else if acheter = "Poulet" || acheter = "poulet" then
 									let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_demander_qte_achat()) in
 									let nombre = Affichage.Affichage.demander_qte() in
-									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m Poulet nombre) in action_marchand perso marchand
+									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m Poulet nombre) in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vente_marchand_valide p m Poulet nombre) in action_marchand perso marchand
 								else if acheter = "Nuada" || acheter = "nuada" then
-									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (G Epee_de_nuada)) 1) in action_marchand perso marchand
+									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (G Epee_de_nuada)) 1) in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vente_marchand_valide p m (Arme (G Epee_de_nuada)) 1) in action_marchand perso marchand
 								else if acheter = "Kusanagi" || acheter = "kusanagi" then
-									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (G Kusanagi_et_Yata_no_kagami)) 1) in action_marchand perso marchand
+									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (G Kusanagi_et_Yata_no_kagami)) 1) in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vente_marchand_valide p m (Arme (G Kusanagi_et_Yata_no_kagami)) 1) in action_marchand perso marchand
 								else if acheter = "Aegis" || acheter = "aegis" then
-									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (G Aegis)) 1) in action_marchand perso marchand
+									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (G Aegis)) 1) in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vente_marchand_valide p m (Arme (G Aegis)) 1) in action_marchand perso marchand
 								else if acheter = "Durandal" || acheter = "durandal" then
-									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (G Durandal)) 1) in action_marchand perso marchand
+									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (G Durandal)) 1) in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vente_marchand_valide p m (Arme (G Durandal)) 1) in action_marchand perso marchand
 								else if acheter = "Excalibur" || acheter = "excalibur" then
-									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (G Excalibur)) 1) in action_marchand perso marchand
+									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (G Excalibur)) 1) in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vente_marchand_valide p m (Arme (G Excalibur)) 1) in action_marchand perso marchand
 								else if acheter = "Artemis" || acheter = "artemis" then
-									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (A Arc_Artemis)) 1) in action_marchand perso marchand
+									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (A Arc_Artemis)) 1) in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vente_marchand_valide p m (Arme (A Arc_Artemis)) 1) in action_marchand perso marchand
 								else if acheter = "Gandiva" || acheter = "gandiva" then
-									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (A Gandiva)) 1) in action_marchand perso marchand
+									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (A Gandiva)) 1) in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vente_marchand_valide p m (Arme (A Gandiva)) 1) in action_marchand perso marchand
 								else if acheter = "Bouclier" || acheter = "bouclier" then
-									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (A Arc_bouclier_immortel)) 1) in action_marchand perso marchand
+									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (A Arc_bouclier_immortel)) 1) in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vente_marchand_valide p m (Arme (A Arc_bouclier_immortel)) 1) in action_marchand perso marchand
 								else if acheter = "Zephyr" || acheter = "zephyr" then
-									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (A Zephyr)) 1) in action_marchand perso marchand
+									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (A Zephyr)) 1) in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vente_marchand_valide p m (Arme (A Zephyr)) 1) in action_marchand perso marchand
 								else if acheter = "Lumiere" || acheter = "lumiere" then
-									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (A Arc_de_lumiere)) 1) in action_marchand perso marchand
+									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (A Arc_de_lumiere)) 1) in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vente_marchand_valide p m (Arme (A Arc_de_lumiere)) 1) in action_marchand perso marchand
 								else if acheter = "Gae" || acheter = "gae" then
-									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (M Gae_bolga)) 1) in action_marchand perso marchand
+									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (M Gae_bolga)) 1) in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vente_marchand_valide p m (Arme (M Gae_bolga)) 1) in action_marchand perso marchand
 								else if acheter = "Caducee" || acheter = "caducee" then
-									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (M Caducee)) 1) in action_marchand perso marchand
+									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (M Caducee)) 1) in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vente_marchand_valide p m (Arme (M Caducee)) 1) in action_marchand perso marchand
 								else if acheter = "Ino" || acheter = "ino" then
-									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (M Voile_Ino)) 1) in action_marchand perso marchand
+									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (M Voile_Ino)) 1) in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vente_marchand_valide p m (Arme (M Voile_Ino)) 1) in action_marchand perso marchand
 								else if acheter = "Gambanteinn" || acheter = "gambanteinn" then
-									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (M Gambanteinn)) 1) in action_marchand perso marchand
+									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (M Gambanteinn)) 1) in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vente_marchand_valide p m (Arme (M Gambanteinn)) 1) in action_marchand perso marchand
 								else if acheter = "Sureau" || acheter = "sureau" then
-									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (M Baguette_de_sureau)) 1) in action_marchand perso marchand
+									let perso,marchand = (Marchand.Marchand.peut_acheter_marchand p m (Arme (M Baguette_de_sureau)) 1) in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vente_marchand_valide p m (Arme (M Baguette_de_sureau)) 1) in action_marchand perso marchand
 								else action_marchand p m
 							with
 							| Marchand.Marchand.Pas_Assez_DeStock -> let () = Affichage.Affichage.aff("\nDésolé mais je n'en possède pas autant\n") in action_marchand p m
@@ -190,11 +190,11 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 								if vendre = "Eponge" || vendre = "eponge" then
 									let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_demander_qte_vente()) in
 										let nombre = Affichage.Affichage.demander_qte() in
-											let perso = Marchand.Marchand.vente_gain_piece (Marchand.Marchand.vente_perte_contenu p Eponge nombre) nombre (Objet.Objet.prix_obj_stock_vente m.stock_vente Eponge) in action_marchand perso m
+											let perso = Marchand.Marchand.vente_gain_piece (Marchand.Marchand.vente_perte_contenu p Eponge nombre) nombre (Objet.Objet.prix_obj_stock_vente m.stock_vente Eponge) in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vendre_valide p m Eponge nombre) in action_marchand perso m
 								else if vendre = "Poulet" || vendre = "poulet" then
 									let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_demander_qte_vente()) in
 										let nombre = Affichage.Affichage.demander_qte() in
-											let perso = Marchand.Marchand.vente_gain_piece (Marchand.Marchand.vente_perte_contenu p Poulet nombre) nombre (Objet.Objet.prix_obj_stock_vente m.stock_vente Poulet) in action_marchand perso m
+											let perso = Marchand.Marchand.vente_gain_piece (Marchand.Marchand.vente_perte_contenu p Poulet nombre) nombre (Objet.Objet.prix_obj_stock_vente m.stock_vente Poulet) in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vendre_valide p m Poulet nombre) in action_marchand perso m
 								else action_marchand p m
 							with
 							| Objet.Objet.Pas_assez_Objet -> let () = Affichage.Affichage.aff("\nVous n'en possédez pas autant !\n") in action_marchand p m
@@ -235,13 +235,13 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 				let choix = Affichage.Affichage.demander_action_marabout() in
 					if choix = "Puissance" || choix = "puissance" then
 						try
-							let perso = Marabout.Marabout.peut_acheter_marabout p mara Potion_Puissance in action_marabout perso mara
+							let perso = Marabout.Marabout.peut_acheter_marabout p mara Potion_Puissance in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vente_marabout_valide p mara Potion_Puissance) in action_marabout perso mara
 						with
 						| Marabout.Marabout.Pas_Plus_Dune_Potion -> let () = Affichage.Affichage.aff("\nVous ne pouvez pas posséder plus d'un exemplaire par type de potion\n") in action_marabout p mara
 						| Marchand.Marchand.Pas_Assez_DArgent -> let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_pas_assez_argent()) in action_marabout p mara
 					else if choix = "Precision" || choix = "precision" then
 						try
-							let perso = Marabout.Marabout.peut_acheter_marabout p mara Potion_Precision in action_marabout perso mara
+							let perso = Marabout.Marabout.peut_acheter_marabout p mara Potion_Precision in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_vente_marabout_valide p mara Potion_Precision) in action_marabout perso mara
 						with
 						| Marabout.Marabout.Pas_Plus_Dune_Potion -> let () = Affichage.Affichage.aff("\nVous ne pouvez pas posséder plus d'un exemplaire par type de potion\n") in action_marabout p mara
 						| Marchand.Marchand.Pas_Assez_DArgent -> let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_pas_assez_argent()) in action_marabout p mara
@@ -255,6 +255,17 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 					else p
 
 
+	(** Fonction qui prends en compte les actions qu'un joueur peut faire dans la foire
+	@param p : le personnage
+	@return le personnage quand il sort de la foire*)
+	let rec action_foire : Personnage.Personnage.personnage -> Personnage.Personnage.personnage = fun p ->
+		let () = Affichage.Affichage.aff(Foire.Foire.afficher_jeu p) in 
+		let choix = Foire.Foire.demander_jeu() in
+			if choix = "N" || choix = "n" then let () = Affichage.Affichage.aff(Foire.Foire.afficher_mise()) in let mise = Foire.Foire.demander_mise() in let perso = Foire.Foire.jouer_nim p mise in action_foire perso
+			else if choix = "D" || choix = "d" then let () = Affichage.Affichage.aff(Foire.Foire.afficher_mise()) in let mise = Foire.Foire.demander_mise() in let perso = Foire.Foire.jouer_de p mise in action_foire perso
+			else if choix = "M" || choix = "m" then let () = Affichage.Affichage.aff(Foire.Foire.afficher_mise()) in let mise = Foire.Foire.demander_mise() in let perso = Foire.Foire.jouer_morpion p mise in action_foire perso
+			else p
+
 
 	(** Fonction qui prends en comptes les action qu'un joueur peut faire dans le village
 	@param p : le personnage
@@ -264,7 +275,7 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 			let action = Affichage.Affichage.demander_action_village() in 
 				if action = "A" || action = "a" then let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_aubergiste()) in let perso = action_auberge p in action_village perso
 				else if action = "M" || action = "m" then let mara = Marabout.Marabout.creer_marabout() in let () = Affichage.Affichage.aff(Affichage.Affichage.phrase_init_marabout p mara) in let perso = action_marabout p mara in action_village perso
-				else if action = "F" || action = "f" then p (*foire*)
+				else if action = "F" || action = "f" then let () = Affichage.Affichage.aff(Foire.Foire.phrase_init_foire()) in let perso = action_foire p in action_village perso
 				else if action = "V" || action = "v" then
 					let () = Affichage.Affichage.aff(Affichage.Affichage.afficher_personnage p) in action_village p
 				else p
@@ -454,8 +465,8 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 				action_reaction 0 p (Monstre.Monstre.generer_monstre_aleatoire())
 			with 
 			| Personnage_mort s -> print_string s
-			| Quitter_adventure -> print_string "\nVous avez quitté l'aventure ! Nous espérons vous revoir bientôt pour une nouvelle aventure !\n"
-			| Partie_gagnee -> print_string "\nBravo vous avez gagné la partie ! Soyez-en fier car rare sont les aventurier à triompher dans ce monde.\n"
+			| Quitter_adventure -> print_string ("\nAu revoir "^p.nom^", vous avez quitté l'aventure ! Nous espérons vous revoir bientôt pour une nouvelle aventure !\n")
+			| Partie_gagnee -> print_string ("\nBravo "^p.nom^", vous avez gagné la partie ! Soyez-en fier car rare sont les aventuriers à triompher dans ce monde.\n")
 
 
 	end

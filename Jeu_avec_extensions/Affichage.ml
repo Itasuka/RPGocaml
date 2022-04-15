@@ -277,9 +277,9 @@ let un_nom_monstre : Monstre.Monstre.monstre->string = fun monstre ->
 let phrase_intialisation_surprise : Monstre.Monstre.monstre->string = fun monstre ->
 	let lenb=Random.int 3 in
 	match lenb with
-	| 0 -> "Soudain, vous tombez nez a nez avec "^(un_nom_monstre monstre)^".\n"
-	| 1 -> "Tout à coup, "^(un_nom_monstre monstre)^" surgit.\n"
-	| 2 -> "D’un seul coup, vous vous retrouver face à face à "^(un_nom_monstre monstre)^".\n"
+	| 0 -> "\nSoudain, vous tombez nez a nez avec "^(un_nom_monstre monstre)^".\n"
+	| 1 -> "\nTout à coup, "^(un_nom_monstre monstre)^" surgit.\n"
+	| 2 -> "\nD’un seul coup, vous vous retrouver face à face à "^(un_nom_monstre monstre)^".\n"
 	| _ -> ""
 	
 (** Fonction permettant d'accorder au feminin et masculin un mot selon le genre du personnage
@@ -762,7 +762,7 @@ let rec demander_action_auberge :  unit -> string = fun () ->
 (** Fonction permettant d'avoir le string de la demande d'action par rapport à l'auberge
 @return le string de la demande d'action*)
 let afficher_action_aub : Personnage.Personnage.personnage -> string = fun perso ->
-    (piece_sac perso)^"\n"^question_service()^"\n(A) Acheter des poulets à 4 Pièces l'unité \n(D) Dormir à l'auberge contre 10 Pièces \n(O) Observer l'auberge \n(V) Visualiser l'état de votre personnage\n(P) Partir \n"
+    "\n"^(piece_sac perso)^question_service()^"\n(A) Acheter des poulets à 4 Pièces l'unité \n(D) Dormir à l'auberge contre 10 Pièces \n(O) Observer l'auberge \n(V) Visualiser l'état de votre personnage\n(P) Partir \n"
 
 (** Fonction permettant de générer aléatoirement une phrase de description de l'auberge
 @return le string de la description de l'auberge *)
@@ -807,7 +807,7 @@ let phrase_texte_aub : unit -> string = fun () ->
 			| Objet.Objet.{quantite = qte ; prix = prix ; obj = ctn}::tail when qte<=0 -> aux tail affichage
 			| Objet.Objet.{quantite = qte ; prix = prix ; obj = ctn}::[] -> affichage^(ligne_stock true qte prix ctn perso)
 			| Objet.Objet.{quantite = qte ; prix = prix ; obj = ctn}::tail -> aux tail (affichage^(ligne_stock true qte prix ctn perso)^"\n")
-			in aux stock (piece_sac perso)^"    Voici ce que je propose à la vente...\n"
+			in aux stock ((piece_sac perso)^"    Voici ce que je propose à la vente...\n")
 
 	(** Fonction permettant d'avoir le string de l'affichage du stock de vente du marchand
 	@param marchand : le marchand dont on veut avoir le stock de vente
@@ -877,7 +877,7 @@ let bjr_marchand : Marchand.Marchand.marchand -> Personnage.Personnage.personnag
 			| Arme (A (Arc_Artemis)) -> ["artemis";"Artemis"]
 			| Arme (A (Gandiva)) -> ["gandiva";"Gandiva"]
 			| Arme (A (Arc_bouclier_immortel)) -> ["bouclier";"Bouclier"]
-			| Arme (A (Zephyr)) -> ["zephyr,Zephyr"]
+			| Arme (A (Zephyr)) -> ["zephyr";"Zephyr"]
 			| Arme (A (Arc_de_lumiere)) -> ["lumiere";"Lumiere"]
 			| Arme (M (Baton_en_bois)) -> ["bois";"Bois"]
 			| Arme (M (Gae_bolga)) -> ["Gae";"gae"]
@@ -1016,29 +1016,28 @@ let bjr_marchand : Marchand.Marchand.marchand -> Personnage.Personnage.personnag
 		let stock = marchand.stock in
 		let leprix = Objet.Objet.prix_obj_stock stock ctn in
 		let prix = leprix*qte in
-		"Vous venez d'acheter "^(string_of_int qte)^" "^(bien_ecrire_contenu perso qte ctn)^" pour "^(string_of_int prix)^" "^(bien_ecrire_contenu perso prix Piece)^"."
+		"\nVous venez d'acheter "^(bien_ecrire_contenu perso qte ctn)^" pour "^(bien_ecrire_contenu perso prix Piece)^".\n"
 	
 	(** Fonction permettant d'avoir une phrase de confirmation d'achat
 	@param perso : le personnage qui a acheté quelque chose
 	@param marchand : le marchand auquel le personnage a acheté quelque chose
-	@param ctn : le contenu que le personnage a acheté
-	@param qte : la quantite d'objet que le personnage a acheté*)
-	let phrase_vente_marabout_valide : Personnage.Personnage.personnage -> Marabout.Marabout.marabout-> Objet.Objet.contenu -> int -> string = fun perso mara ctn qte ->
+	@param ctn : le contenu que le personnage a acheté*)
+	let phrase_vente_marabout_valide : Personnage.Personnage.personnage -> Marabout.Marabout.marabout-> Objet.Objet.contenu -> string = fun perso mara ctn ->
 		let stock = mara.stock_vente in
 		let leprix = Objet.Objet.prix_obj_stock_vente stock ctn in
-		let prix = leprix*qte in
-		"Vous venez d'acheter "^(string_of_int qte)^" "^(bien_ecrire_contenu perso qte ctn)^" pour "^(string_of_int prix)^" "^(bien_ecrire_contenu perso prix Piece)^"."
+		let prix = leprix in
+		"\nVous venez d'acheter "^(bien_ecrire_contenu perso 1 ctn)^" pour "^(bien_ecrire_contenu perso prix Piece)^".\n"
 	
 	(** Fonction permettant d'avoir une phrase de confirmation de vente
 	@param perso : le personnage qui a vendu quelque chose
 	@param marchand : le marchand auquel le personnage a vendu quelque chose
 	@param ctn : le contenu que le personnage a vendu
 	@param qte : la quantite d'objet que le personnage a vendu*)
-	let phrase_achat_valide : Personnage.Personnage.personnage -> Marchand.Marchand.marchand -> Objet.Objet.contenu -> int -> string = fun perso marchand ctn qte ->
+	let phrase_vendre_valide : Personnage.Personnage.personnage -> Marchand.Marchand.marchand -> Objet.Objet.contenu -> int -> string = fun perso marchand ctn qte ->
 		let stock = marchand.stock_vente in
 		let leprix = Objet.Objet.prix_obj_stock_vente stock ctn in
 		let prix = leprix*qte in
-		"Vous venez de vendre "^(string_of_int qte)^" "^(bien_ecrire_contenu perso qte ctn)^" pour "^(string_of_int prix)^" "^(bien_ecrire_contenu perso prix Piece)^"."
+		"\nVous venez de vendre "^(bien_ecrire_contenu perso qte ctn)^" pour "^(bien_ecrire_contenu perso prix Piece)^".\n"
 
 
 (*-----------------marabout-----------------*)
@@ -1073,9 +1072,9 @@ let phrase_avenir : unit -> string = fun () ->
 	let phrase_init_marabout : Personnage.Personnage.personnage -> Marabout.Marabout.marabout -> string = fun perso mara ->
 		let lenb=Random.int 3 in
 		match lenb with
-		| 0 -> "Bien le bonjour ! Je suis le marabout "^mara.nom^"."^(question_service ())^"\n"^(mara_contenu_stock_vente mara perso)^"\n"
-		| 1 -> "Bienvenue à vous ! Je me présente, je suis le marabout "^mara.nom^"."^(question_service ())^"\n"^(mara_contenu_stock_vente mara perso)^"\n"
-		| 2 -> "Bonjour ! Laissez-moi me présenter ! Je suis le marabout "^mara.nom^"."^(question_service ())^"\n"^(mara_contenu_stock_vente mara perso)^"\n"
+		| 0 -> "\nBien le bonjour ! Je suis le marabout "^mara.nom^". "^(question_service ())^"\n"^(mara_contenu_stock_vente mara perso)^"\n"
+		| 1 -> "\nBienvenue à vous ! Je me présente, je suis le marabout "^mara.nom^". "^(question_service ())^"\n"^(mara_contenu_stock_vente mara perso)^"\n"
+		| 2 -> "\nBonjour ! Laissez-moi me présenter ! Je suis le marabout "^mara.nom^". "^(question_service ())^"\n"^(mara_contenu_stock_vente mara perso)^"\n"
 		|_ -> ""
 
 		(**Fonction permettant de demander une action par rapport au village
@@ -1090,7 +1089,7 @@ let phrase_avenir : unit -> string = fun () ->
 	(** Fonction permettant d'avoir le string de la demande d'action du personnage par rapport au village
 	@return le string de la demande *)
 	let phrase_village_action : unit -> string = fun () ->
-		"Vous êtes dans le village...\nQue voulez-vous faire ?\n\n(A) Aller faire un tour à l'auberge \n(M) Rendre visite au marabout du coin \n(F) Se rendre à la foire pour jouer à des jeux d'argent \n(V) Visualiser l'état de votre personnage\n(P) Partir du village "
+		"\nVous êtes dans le village...\nQue voulez-vous faire ?\n\n(A) Aller faire un tour à l'auberge \n(M) Rendre visite au marabout du coin \n(F) Se rendre à la foire pour jouer à des jeux d'argent \n(V) Visualiser l'état de votre personnage\n(P) Partir du village "
 			
 		(** Fonction permettant d'afficher ce que peut acheter le personnage chez le marabout
 		@param perso : le personnage
@@ -1103,7 +1102,7 @@ let phrase_avenir : unit -> string = fun () ->
 				| [] -> affichage
 				| {prix = p ; obj = ctn}::[] -> affichage^(match_affichage perso ctn)
 				| {prix = p ; obj = ctn}::tail -> aux tail (affichage^(match_affichage perso ctn)^"\n")
-				in let res = aux stock ((piece_sac perso)^"Que souhaitez-vous acheter/faire ?\n(Prediction) Faire une prédiction de votre avenir pour 5 pièces. \n") in res^"\n(V) Visualiser l'état de votre personnage\n(P) Partir"
+				in let res = aux stock (piece_sac perso^"Que souhaitez-vous acheter/faire ?\n(Prediction) Faire une prédiction de votre avenir pour 5 pièces. \n") in res^"\n(V) Visualiser l'état de votre personnage\n(P) Partir"
 
 		(**Fonction permettant de demander une action par rapport au village
 		@return la reponse de l'utilisateur sous forme d'un string*)
@@ -1154,7 +1153,6 @@ let phrase_init_village : unit -> string = fun () ->
 	@return le string à afficher*)
 	let afficher_effet_pot_estompe : unit -> string = fun () ->
 		"\nLes effets des potions se sont estompés\n"
-
 
 	end
 
