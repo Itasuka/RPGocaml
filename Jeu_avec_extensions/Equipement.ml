@@ -33,39 +33,6 @@ module Equipement =
   let stats_acc : unit -> stats = fun () -> {pv = 0.; atk = -1; def = -1; acc = 20}
   let stats_leg : unit -> stats = fun () -> {pv = 20.; atk = 5; def = 1; acc = 20}
 
-  let afficher_arme_guerrier : type_arme_guerrier -> string = fun a ->
-    match a with
-    | Epee_en_bois -> "Epee en bois"
-    | Epee_de_nuada -> "Epee de Nuada"
-    | Kusanagi_et_Yata_no_kagami -> "Kusanagi et Yata no Kagami"
-    | Aegis -> "Aegis"
-    | Durandal -> "Durandal"
-    | Excalibur -> "Excalibur"
-
-  let afficher_arme_archer : type_arme_archer -> string = fun a ->
-    match a with
-    | Arc_en_bois -> "Arc en bois"
-    | Arc_Artemis -> "Arc d'Artemis"
-    | Gandiva -> "Gandiva"
-    | Arc_bouclier_immortel -> "Arc bouclier immortel"
-    | Zephyr -> "Zephyr"
-    | Arc_de_lumiere -> "Arc de lumiere"
-
-    let afficher_arme_magicien : type_arme_magicien -> string = fun a ->
-      match a with
-      | Baton_en_bois -> "Baton en bois"
-      | Gae_bolga -> "Gae Bolga"
-      | Caducee -> "Caducee"
-      | Voile_Ino -> "Voile d'Ino"
-      | Gambanteinn -> "Gambanteinn"
-      | Baguette_de_sureau -> "Baguette de sureau"
-
-  let afficher_arme : arme -> string = fun a ->
-    match a with
-    | G arme -> afficher_arme_guerrier arme.arme
-    | A arme -> afficher_arme_archer arme.arme
-    | M arme -> afficher_arme_magicien arme.arme
-
     let creer_arme_guerrier : type_arme_guerrier -> arme_guerrier = fun t ->
       match t with
       | Epee_en_bois -> {arme = Epee_en_bois; stats = stats_base(); specialite = "Aucune"}

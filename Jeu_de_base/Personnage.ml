@@ -12,6 +12,7 @@ module type PERSONNAGE =
 	(* Fonction qui initialise un personnage niveau 1 avec 20 points de vie et un sac vide *)
 	val creer_personnage : string -> genre -> classe -> personnage
 
+	(**)
 	val gain_xp : personnage -> int -> int*personnage
 
 	val modif_pv : personnage -> float -> personnage
@@ -96,7 +97,7 @@ module Personnage =
 	let modif_sac_perso : personnage -> Objet.Objet.contenu -> int -> personnage = fun p obj qte -> {nom=p.nom; genre=p.genre; classe=p.classe; lvl=p.lvl; exp=p.exp; pv=p.pv; sac= Objet.Objet.modif_sac p.sac obj qte}
 	
 	(** Fonction qui soigne de 4 pv le personnage et consomme 1 poulet si le personnage en possède
-	@author Nicolas S
+	@author Noémie L
 	@param p : le personnage
 	@return true et le personnage qui à mangé ou false et le personnage qui n'a pas mangé *)
 	let manger : personnage -> bool*personnage = fun p ->

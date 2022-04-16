@@ -145,7 +145,7 @@ module Affichage : SIGAFFICHAGE =
 		| Poulet -> laqte^" poulet"
 
 	(** Fonction permettant de convertir un nom de monstre en string
-	@author Noemie L
+	@author Noémie L
 	@param m : le monstre dont on veut convertir le nom
 	@return le string du nom du monstre*)
 	let string_monstre : Monstre.Monstre.monstre -> string = fun m -> match m.monstre with
@@ -448,8 +448,8 @@ let phrase_mort_personnage : Personnage.Personnage.personnage-> Monstre.Monstre.
 @return le string de la phrase de mort du personnage*)
 let phrase_mort_nuit : Personnage.Personnage.personnage-> Monstre.Monstre.monstre->string = fun perso monstre->
 	match monstre.monstre with
-		| Golem -> "\nVous installez votre campement et tombez rapidement "^(accord_fem_masc perso ("endormi"))^". Pendant votre sommeil, un Golem surgit et vous fracasse le crane. Vous êtes accord_fem_masc mort.\n"
-		| Moustiques n -> "\nVous êtes "^(accord_fem_masc perso ("fatigue"))^" et décidez de dormir à la belle étoile prêt d’un marecage. Cependant, une Nuée de moustique apparait et vous pique inlassablement jusqu’à vous tuer. Vous êtes "^(accord_fem_masc perso ("mort"))^".\n"
+		| Golem -> "\nVous installez votre campement et tombez rapidement "^(accord_fem_masc perso ("endormi"))^". Pendant votre sommeil, un Golem surgit et vous fracasse le crane. Vous êtes "^(accord_fem_masc perso ("mort"))^".\n"
+		| Moustiques n -> "\nVous êtes "^(accord_fem_masc perso ("fatigué"))^" et décidez de dormir à la belle étoile prêt d’un marecage. Cependant, une Nuée de moustique apparait et vous pique inlassablement jusqu’à vous tuer. Vous êtes "^(accord_fem_masc perso ("mort"))^".\n"
 		| _ -> "\nVos nombreux baillements vous poussent à installer un campement pour dormir à l’orée d’une forêt. Vous pensant à l’abri vous vous endormez. Or, un Sanglier vous charge et vous piétine. Vous gémissez de douleur jusqu’à la mort.\n"
 
 (** Fonction permettant de générer aléatoirement une phrase lorsque le personnage dort sans mourir

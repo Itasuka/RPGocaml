@@ -92,7 +92,9 @@ module Personnage : PERSONNAGE =
 	@param qte : la quantité à rajouter
 	@return le personnage avec son sac modifié*)
 	let modif_sac_perso : personnage -> Objet.Objet.contenu -> int -> personnage = fun p obj qte -> {nom=p.nom; genre=p.genre; classe=p.classe; lvl=p.lvl; exp=p.exp; stats_base = p.stats_base; sac= Objet.Objet.modif_sac p.sac obj qte; armequipe = p.armequipe; statBonusPot = p.statBonusPot}
+
 	(** Fonction qui soigne de 4 pv le personnage et consomme 1 poulet si le personnage en possède
+	@author Noémie L
 	@param p : le personnage
 	@return true et le personnage qui à mangé ou false et le personnage qui n'a pas mangé *)
 	let manger : personnage -> bool*personnage = fun p ->
@@ -238,6 +240,7 @@ let faire_perte_objet : personnage -> Objet.Objet.sac -> int*Objet.Objet.contenu
 						let chance = Random.int (List.length obj_obtenable) in Objet.Objet.{quantite = 1; prix = 250; obj = (List.nth obj_obtenable chance)}
 
 
+		
     let bonus : personnage -> Objet.Objet.contenu -> int*personnage = fun perso ctn ->
         let lenb = Random.int 100 in
         if ctn=Potion_Precision then 
