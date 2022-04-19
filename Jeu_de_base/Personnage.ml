@@ -34,8 +34,17 @@ end
 
 module Personnage =
 	struct
+
+	(** Type représentant le sexe du personnage
+	@author Nicolas M*)
 	type genre = Homme | Femme
+
+	(** Type représentant la classe du personnage
+	@author Nicolas M*)
 	type classe = Archer | Guerrier | Magicien
+
+	(** Type représentant un personnage avec son nom, son genre, sa classe, son niveau, son expérience, ses points de vie et son sac
+	@author Nicolas M*)
 	type personnage = {nom : string ; genre : genre; classe : classe ; lvl : int ; exp : int ; pv : float ; sac : Objet.Objet.sac}
 	
 	(** Fonction qui initialise un personnage niveau 1 avec 20 points de vie et un sac vide
@@ -97,7 +106,7 @@ module Personnage =
 	let modif_sac_perso : personnage -> Objet.Objet.contenu -> int -> personnage = fun p obj qte -> {nom=p.nom; genre=p.genre; classe=p.classe; lvl=p.lvl; exp=p.exp; pv=p.pv; sac= Objet.Objet.modif_sac p.sac obj qte}
 	
 	(** Fonction qui soigne de 4 pv le personnage et consomme 1 poulet si le personnage en possède
-	@author Noémie L
+	@author Nicolas S
 	@param p : le personnage
 	@return true et le personnage qui à mangé ou false et le personnage qui n'a pas mangé *)
 	let manger : personnage -> bool*personnage = fun p ->

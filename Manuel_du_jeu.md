@@ -41,6 +41,7 @@ __Nicolas S__ :
 
 Dans la partie sans extensions, je me suis occupé :
 * Des fonctions de mofications du personnage (gain de l'expérience, modifications des points de vie et du sac du personnage)
+* La fonction manger
 * De la fonction calculant les dégats du personnage en prenant en compte ses chances de toucher selon la classe
 * Des fonctions qui permettent de créer un monstre aléatoire avec des points de vie et un objet aléatoire (si il en possède un)
 * Des fonctions de demandes d'actions
@@ -50,9 +51,10 @@ Je me suis aussi occupé de la correction des erreurs dans sa globalité ainsi q
 
 Dans la partie avec extensions, je me suis occupé de l'entièreté de la partie équipements/statistiques (à l'exception de l'ajustement de l'affichage prenant en compte les armes), c'est à dire :
 * Création des types pour définir 5 armes pour chaques classe, recherche de noms pour les armes afin s'inspirer de la mythologie, de films ou de jeux vidéo marquant
-* Modification du personnage pour qu'il possède des statistiques ainsi qu'une arme équipée
-* Modification du sac afin d'initialiser les armes dedans
+* Modification du personnage pour qu'il possède des statistiques, une arme équipée ainsi que des stats bonus octroyées par les potions
+* Modification du sac afin d'initialiser les armes et les potions dedans
 * Création d'une fonction permettant de générer une arme aléatoire obtenable auprès du marchand selon la classe et le sac du personnage
+* Création de fonctions permettant de modifier ou réinitialiser les stats octroyées par les potions 
 
 Modifications du module Jeu pour prendre en compte les diverses extensions.
 Correction des erreurs du jeu dans sa globalité.

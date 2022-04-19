@@ -9,7 +9,8 @@ end
 module Jeu : JEU =
 	struct
 
-		(** Fonction permettant de faire gagner 4pv au perso si il reussit a dormir ou de le tuer sinon
+	(** Fonction permettant de faire gagner 4pv au perso si il reussit a dormir ou de le tuer sinon
+	@author Noemie L
 	@param perso : le personnage que l'on souhaite faire dormir
 	@return un tuple avec true si il a reussit a dormir et false sinon avec en plus l'etat du perso et le monstre genere*)
 	let dormir : Personnage.Personnage.personnage->bool*Personnage.Personnage.personnage*Monstre.Monstre.monstre = fun perso ->
@@ -19,6 +20,7 @@ module Jeu : JEU =
 
 		
 	(** Fonction qui effectue le déroulement de la victoire du joueurs lors d'un combat
+	@author Nicolas S
 	@param p : le personnage qui a vaincu
 	@param m : le monstre qui a été vaincu
 	@return le personnage avec l'xp gagné*)
@@ -43,9 +45,13 @@ module Jeu : JEU =
 										else
 											Personnage.Personnage.modif_sac_perso (snd(lvl_et_perso)) obj qte
 
-	
+	(** Exception levée à la mort du personnage
+	@author Nicolas S
+	@param string : la raison de la mort*)
 	exception Personnage_mort of string
-	(** Fonction qui fait combattre un personnage et un monstre jusqu'à la mort de l'un d'eu
+
+	(** Fonction qui fait combattre un personnage et un monstre jusqu'à la mort de l'un d'eux
+	@author Nicolas S
 	@param p : le personnage
 	@param m : le monstre
 	@return le personnage s'il gagne
@@ -69,6 +75,7 @@ module Jeu : JEU =
 										else combattre personnage monstre
 										
 	(** Fonction qui fait un attaque surprise d'un monstre aléatoire sur un personnage
+	@author Nicolas S
 	@param p : le personnage
 	@return le personnage s'il gagne
 	@raise Personnage_mort si le monstre gagne*)
@@ -83,7 +90,8 @@ let get_1_3 : 'a*'b*'c -> 'a = fun (a,_,_) -> a
 let get_2_3 : 'a*'b*'c -> 'b = fun (_,a,_) -> a
 let get_3_3 : 'a*'b*'c -> 'c = fun (_,_,a) -> a
 
-	(** Fonction permettant de d'afficher et de recuperer le nouvel etat du personnage
+(** Fonction permettant de d'afficher et de recuperer le nouvel etat du personnage
+@author Noemie L
 @param perso : le personnage dont on veut potentiellement faire perdre des objets 
 @return le nouvel etat du personnage*)
 let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.personnage = fun perso ->
@@ -99,6 +107,7 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 					get_3_3 perdu
 	
 	(** Fonction qui effectue la création de personnage
+	@author Nicolas S
 	@return le nouveau personnage selon les choix de l'utilisateur*)
 	let creer_partie : unit -> Personnage.Personnage.personnage = fun () ->
 		let () = Affichage.Affichage.aff(Affichage.Affichage.debut_partie()) in
@@ -132,6 +141,7 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 													Personnage.Personnage.creer_personnage nom genre classe
 
 	(** Fonction qui gère les actions avec le marchand itinérant
+	@author Nicolas S
 	@param p : le personnage
 	@return le personnage après avoir quitté le marchand*)
 	let rec action_marchand : Personnage.Personnage.personnage -> Marchand.Marchand.marchand -> Personnage.Personnage.personnage = fun p m ->
@@ -203,6 +213,7 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 				else p
 
 	(** Fonction qui gère les actions chez l'aubergiste
+	@author Nicolas S
 	@param p : le personnage
 	@return le personnage quand il quitte l'auberge*)
 	let rec action_auberge : Personnage.Personnage.personnage -> Personnage.Personnage.personnage = fun p ->
@@ -228,6 +239,7 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 				else p
 
 	(** Fonction qui gère les actions chez le marabout
+	@author Nicolas S
 	@param p : le personnage
 	@return le personnage quand il part de chez le marabout*)
 	let rec action_marabout : Personnage.Personnage.personnage -> Marabout.Marabout.marabout -> Personnage.Personnage.personnage = fun p mara ->
@@ -256,6 +268,7 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 
 
 	(** Fonction qui prends en compte les actions qu'un joueur peut faire dans la foire
+	@author Nicolas S
 	@param p : le personnage
 	@return le personnage quand il sort de la foire*)
 	let rec action_foire : Personnage.Personnage.personnage -> Personnage.Personnage.personnage = fun p ->
@@ -268,6 +281,7 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 
 
 	(** Fonction qui prends en comptes les action qu'un joueur peut faire dans le village
+	@author Nicolas S
 	@param p : le personnage
 	@return le personnage après qu'il ait quitté le village*)
 	let rec action_village : Personnage.Personnage.personnage -> Personnage.Personnage.personnage = fun p ->
@@ -281,6 +295,7 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 				else p
 
 	(** Fonction qui définit les taux d'apparition des villages/marchand/les deux
+	@author Nicolas S
 	@return un int correspondant au type de rencontre (typ) dans action_reaction*)
 	let type_rencontre : unit -> int = fun () ->
 		let chance = Random.int 100 in
@@ -291,10 +306,17 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 		|_ -> 0
 
 
+	(** Exception levée lorsque le joueur atteint le niveau 10 donc lorsque la partie est gagnée
+	@author Nicolas S*)
 	exception Partie_gagnee
+
+	(** Exception levée lorsque le joueur choisi de quitter le jeu
+	@author Nicolas S*)
 	exception Quitter_adventure
+
 	(** Fonction qui effectue le déroulement de la partie
-	@param typ : le type de rencontre (0 pour action et 1 pour une réaction)
+	@author Nicolas S
+	@param typ : le type de rencontre (0 pour action, 1 pour une réaction, 2 action avec marchand, 3 action avec village et 4 action avec marchand et village)
 	@param p : le personnage de l'utilisateur
 	@param monstre : le monstre que le joueur peut potentiellement rencontrer en combat
 	@raise Partie_gagnee quand le joueur atteint le niveau 10
@@ -456,6 +478,7 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 											else raise Quitter_adventure
 	
 	(** Fonction qui creer la partie et effectue le déroulement de la partie
+	@author Nicolas S
 	@catch Personnage_mort et affiche le message de mort
 	@catch Quitter_adventure et affiche un message d'au revoir au personnage
 	@catch Partie_gagnee et affiche un message pour félicité le personnage d'avoir fini le jeu*)

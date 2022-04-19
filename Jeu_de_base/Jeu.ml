@@ -15,10 +15,7 @@ module Jeu : JEU =
 	struct
 
 	(** Fonction permettant de faire gagner 4pv au personnage si il reussit à dormir ou de le tuer sinon
-<<<<<<< HEAD
-=======
 	@author Noemie L
->>>>>>> 9c4527c6b070eab06c335283a5408968ac49c736
 	@param perso : le personnage que l'on souhaite faire dormir
 	@return un tuple avec true si il a reussit a dormir et false sinon avec en plus l'état du personnage et le monstre génére*)
 	let dormir : Personnage.Personnage.personnage->bool*Personnage.Personnage.personnage*Monstre.Monstre.monstre = fun perso ->
@@ -44,15 +41,12 @@ module Jeu : JEU =
 								Personnage.Personnage.modif_sac_perso (snd(lvl_et_perso)) obj qte
 							else Personnage.Personnage.modif_sac_perso (snd(lvl_et_perso)) obj qte
 
-	
+	(** Exception levée lorsque le personnage meurt
+	@author Nicolas S*)
 	exception Personnage_mort of string
-<<<<<<< HEAD
-	(** Fonction qui fait combattre un personnage et un monstre jusqu'à la mort de l'un d'eux
-=======
 
 	(** Fonction qui fait combattre un personnage et un monstre jusqu'à la mort de l'un d'eux
 	@author Nicolas S
->>>>>>> 9c4527c6b070eab06c335283a5408968ac49c736
 	@param p : le personnage
 	@param m : le monstre
 	@return le personnage s'il gagne
@@ -98,10 +92,7 @@ module Jeu : JEU =
 	let get_3_3 : 'a*'b*'c -> 'c = fun (_,_,a) -> a
 
 (** Fonction permettant de d'afficher et de récuperer le nouvel état du personnage
-<<<<<<< HEAD
-=======
 @author Nicolas S
->>>>>>> 9c4527c6b070eab06c335283a5408968ac49c736
 @param perso : le personnage dont on veut potentiellement faire perdre des objets 
 @return le nouvel état du personnage*)
 let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.personnage = fun perso ->
@@ -150,7 +141,10 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 												else let classe = Personnage.Personnage.Magicien in
 													Personnage.Personnage.creer_personnage nom genre classe
 
+	(** Exception levée lorsque le personnage atteint le niveau 10 donc lorsque la partie est gagnée*)
 	exception Partie_gagnee
+
+	(** Exception levée lorsque le personnage choisi de quitter l'adventure*)
 	exception Quitter_adventure
 	(** Fonction qui effectue le déroulement de la partie
 	@author Nicolas S
@@ -205,10 +199,7 @@ let perte_objet : Personnage.Personnage.personnage -> Personnage.Personnage.pers
 												else let () = print_string "\n Votre choix est invalide ! \n" in action_reaction 1 p monstre
 	
 	(** Fonction qui créer la partie et effectue le déroulement de la partie
-<<<<<<< HEAD
-=======
 	@author Nicolas S
->>>>>>> 9c4527c6b070eab06c335283a5408968ac49c736
 	@catch Personnage_mort et affiche le message de mort
 	@catch Quitter_adventure et affiche un message d'au revoir au personnage
 	@catch Partie_gagnee et affiche un message pour féliciter le personnage d'avoir fini le jeu*)

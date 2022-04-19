@@ -31,13 +31,21 @@ end
 
 module Monstre : MONSTRE =
 	struct
+
+	(** Type représentant les différents monstres du jeu
+	@author Nicolas M*)
 	type type_monstre = Golem | Sanglier | Moustiques of int
+
+	(** Type représentant le fait qu'un monstre puisse posséder un objet qui donne au joueur à sa mort ou non
+	@author Nicolas S*)
 	type loot = Objet of Objet.Objet.objet | Rien
+
+	(** Type représentant un monstre avec son type, son loot et ses points de vie
+	@author Nicolas M*)
 	type monstre = {monstre : type_monstre; loot : loot ; pv : int}
-	exception Pas_de_loot
 
 	(** Fontion qui récupère le loot d'un monstre
-	@author Nicolas M
+	@author Nicolas S
 	@param m : le monstre
 	@return le loot du monstre*)
 	let get_loot : monstre -> Objet.Objet.objet = fun m ->

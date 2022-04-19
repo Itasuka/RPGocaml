@@ -40,14 +40,38 @@ end
 
 module Personnage : PERSONNAGE =
 	struct
+
+	(** Type représentant le genre du personnage
+	@author Nicolas M*)
 	type genre = Homme | Femme
+
+	(** Type représentant la classe du personnage
+	@author Nicolas M*)
 	type classe = Archer | Guerrier | Magicien
+
+	(** Type représentant les statistiques que possède un personnage, pvmax étant le montant de points de vie que le joueur ne peut dépasser
+	stats.pv les pv actuel
+	@author Nicolas S*)
 	type stats_pers = {stats : Equipement.Equipement.stats; pv_max : float}
+
+	(** Typre représentant un personnage par son nom, son genre, sa classe, son niveau, son expérience, ses statistiques, son sac, son arme équipée et ses bonus obtenu par des potions
+	@author Nicolas M*)
 	type personnage = {nom : string ; genre : genre; classe : classe ; lvl : int ; exp : int ; stats_base : stats_pers; sac : Objet.Objet.sac; armequipe : Equipement.Equipement.arme; statBonusPot : Equipement.Equipement.stats}
+	
+	(** Fonction définissant les statistiques de base d'un personnage de classe Guerrier
+	@author Nicolas S*)
 	let stats_base_G : unit -> stats_pers = fun () -> Equipement.Equipement.{stats={pv = 20.; atk = 10; def = 0; acc = 30};pv_max=20.}
+
+	(** Fonction définissant les statistiques de base d'un personnage de classe Archer
+	@author Nicolas S*)
 	let stats_base_A : unit -> stats_pers = fun () -> Equipement.Equipement.{stats={pv = 20.; atk = 4; def = 0; acc = 70};pv_max=20.}
+
+	(** Fonction définissant les statistiques de base d'un personnage de classe Magicien
+	@author Nicolas S*)
 	let stats_base_M : unit -> stats_pers = fun () -> Equipement.Equipement.{stats={pv = 20.; atk = 5; def = 0; acc = 50};pv_max=20.}
+
 	(** Fonction qui initialise un personnage niveau 1 avec 20 points de vie et un sac vide
+	@author Nicolas M
 	@param n : le nom du personnage
 	@param g : le genre du personnage
 	@param c : la classe du personnage
@@ -55,12 +79,16 @@ module Personnage : PERSONNAGE =
 	let creer_personnage : string -> genre -> classe -> personnage = fun n g c -> if c=Guerrier then {nom = n ; genre = g ; classe = c ; exp = 0 ; lvl = 1 ; stats_base = stats_base_G() ; sac = (Objet.Objet.modif_sac (Objet.Objet.creer_sac()) (Arme (G Epee_en_bois)) 1); armequipe = G (Equipement.Equipement.creer_arme_guerrier Equipement.Equipement.Epee_en_bois); statBonusPot = Equipement.Equipement.stats_base()}
 	else if c=Archer then {nom = n ; genre = g ; classe = c ; exp = 0 ; lvl = 1 ; stats_base = stats_base_A() ; sac = (Objet.Objet.modif_sac (Objet.Objet.creer_sac()) (Arme (A Arc_en_bois)) 1); armequipe = A (Equipement.Equipement.creer_arme_archer Equipement.Equipement.Arc_en_bois); statBonusPot = Equipement.Equipement.stats_base()}
 	else {nom = n ; genre = g ; classe = c ; exp = 0 ; lvl = 1 ; stats_base = stats_base_M() ; sac = (Objet.Objet.modif_sac (Objet.Objet.creer_sac()) (Arme (M Baton_en_bois)) 1); armequipe = M (Equipement.Equipement.creer_arme_magicien Equipement.Equipement.Baton_en_bois); statBonusPot = Equipement.Equipement.stats_base()}
+	
 	(** Fonction permettant l'usage de ^ avec des int
+	@author Nicolas S
 	@param a : un nombre
 	@param b : un nombre
 	@return a^b*)
 	let rec pow : int -> int -> int = fun a b -> if b > 0 then a * (pow) a (b-1) else 1
+
 	(** Fonction qui permet de faire passer des niveau à un personnage
+	@author Nicolas S
 	@param p : le personnage qui va recevoir de l'experience
 	@param xp : le montant d'expérience
 	@return le personnage avec l'expérience ajouté en fonction des niveaux*)
@@ -72,7 +100,9 @@ module Personnage : PERSONNAGE =
 					then aux (lvlgain+1) {nom=perso.nom; genre=perso.genre; classe=perso.classe; exp=nvxp-xppourlvlup; lvl=perso.lvl+1; stats_base = {stats = Equipement.Equipement.{pv = perso.stats_base.stats.pv+.2.; atk = perso.stats_base.stats.atk; def = perso.stats_base.stats.def; acc = perso.stats_base.stats.acc}; pv_max = perso.stats_base.pv_max+.2.}; sac=perso.sac; armequipe = perso.armequipe; statBonusPot = perso.statBonusPot} 0
 					else (lvlgain,{nom=perso.nom; genre=perso.genre; classe=perso.classe; exp=nvxp; lvl=perso.lvl; stats_base = perso.stats_base; sac=perso.sac; armequipe = perso.armequipe; statBonusPot = perso.statBonusPot})
 			in aux p.lvl p exp
+
 	(** Fonction qui permet de modifier les pv d'un personnage
+	@author Nicolas S
 	@param p : le personnage à modifier
 	@param pv : le montant de pv ajouter
 	@return le personnage avec les pv modifiés*)
@@ -80,13 +110,17 @@ module Personnage : PERSONNAGE =
 		if p.stats_base.stats.pv+.pv>=(p.stats_base.pv_max)+.(Equipement.Equipement.get_stats p.armequipe).pv
 			then {nom=p.nom; genre=p.genre; classe=p.classe; lvl=p.lvl; exp=p.exp; stats_base = {stats={pv = (p.stats_base.pv_max)+.(Equipement.Equipement.get_stats p.armequipe).pv; atk = p.stats_base.stats.atk; def = p.stats_base.stats.def; acc = p.stats_base.stats.acc};pv_max = p.stats_base.pv_max}; sac=p.sac; armequipe = p.armequipe; statBonusPot = p.statBonusPot}
 			else {nom=p.nom; genre=p.genre; classe=p.classe; lvl=p.lvl; exp=p.exp; stats_base = {stats={pv = (p.stats_base.stats.pv)+.pv; atk = p.stats_base.stats.atk; def = p.stats_base.stats.def; acc = p.stats_base.stats.acc};pv_max = p.stats_base.pv_max}; sac=p.sac; armequipe = p.armequipe; statBonusPot = p.statBonusPot}
+	
 	(** Fonction qui renvoie les dégats infligé par un personnage en fonction de sa classe ou 0 s'il rate
+	@author Nicolas S
 	@param p : le personnage
 	@return les dégats infligés*)
 	let frapper : personnage -> int = fun p ->
 		let de = Random.int 100 in
 			if de<p.stats_base.stats.acc+p.statBonusPot.acc+p.lvl*5 then p.stats_base.stats.atk+(Equipement.Equipement.get_stats p.armequipe).atk+p.statBonusPot.atk else 0
+	
 	(** Fonction qui permet de modifier le sac du personnage
+	@author Nicolas S
 	@param p : le personnage
 	@param obj : l'objet à modifier
 	@param qte : la quantité à rajouter
@@ -94,7 +128,7 @@ module Personnage : PERSONNAGE =
 	let modif_sac_perso : personnage -> Objet.Objet.contenu -> int -> personnage = fun p obj qte -> {nom=p.nom; genre=p.genre; classe=p.classe; lvl=p.lvl; exp=p.exp; stats_base = p.stats_base; sac= Objet.Objet.modif_sac p.sac obj qte; armequipe = p.armequipe; statBonusPot = p.statBonusPot}
 
 	(** Fonction qui soigne de 4 pv le personnage et consomme 1 poulet si le personnage en possède
-	@author Noémie L
+	@author Nicolas S
 	@param p : le personnage
 	@return true et le personnage qui à mangé ou false et le personnage qui n'a pas mangé *)
 	let manger : personnage -> bool*personnage = fun p ->
@@ -102,7 +136,8 @@ module Personnage : PERSONNAGE =
 			then (true,modif_pv (modif_sac_perso p Poulet (-1)) 2.)
 			else (false,p)
 
-	(** Fonction permettant de savoir si le personnage a des objets sur lui et de retourner ceux dont la quantite est differente de 0
+(** Fonction permettant de savoir si le personnage a des objets sur lui et de retourner ceux dont la quantite est differente de 0
+@author Noemie L
 @param perso : le personnage dont on veut savoir si il a des objets
 @return un tuple avec un booleen true si le personnage a des objets sur lui, false sinon et un sac avec les objets que possede le personnage*)
 let peut_perdre_objet : personnage -> bool*Objet.Objet.sac = fun perso ->
@@ -118,6 +153,7 @@ let peut_perdre_objet : personnage -> bool*Objet.Objet.sac = fun perso ->
 	in (true, aux lesac [])
 
 (** Fonction permettant de faire perdre ou non un objet a un personnage
+@author Noemie L
 @param perso : le personnage dont on veut faire perdre potentiellement un objet
 @param lesac : le sac contenant les objets que peut perdre le personnage
 @return un tuple contenant la quantite de l'objet perdu, le contenu de l'objet perdu et le personnage modifie*)
@@ -138,6 +174,7 @@ let faire_perte_objet : personnage -> Objet.Objet.sac -> int*Objet.Objet.contenu
 	| _ -> (0,Eponge,perso)
 
 	(** Fonction qui convertit le choix de l'utiliateur (en string) en arme
+	@author Nicolas S
 	@param p : le personnage
 	@param t : le string du choix de l'utilisateur
 	@return l'arme correspondant au choix*)
@@ -171,6 +208,7 @@ let faire_perte_objet : personnage -> Objet.Objet.sac -> int*Objet.Objet.contenu
 					|_ -> Equipement.Equipement.creer_arme (M Baton_en_bois)
 
 	(** Fonction permettant de changer l'arme du joueur
+	@author Nicolas S
 	@param p : le personnage
 	@param t : le type de l'arme en string
 	@return le personnage qui a changé d'arme*)
@@ -178,6 +216,7 @@ let faire_perte_objet : personnage -> Objet.Objet.sac -> int*Objet.Objet.contenu
 		{nom=p.nom;genre=p.genre;classe=p.classe;lvl=p.lvl;exp=p.exp;stats_base={stats={pv=min p.stats_base.stats.pv (p.stats_base.pv_max+.(Equipement.Equipement.get_stats(convertit_string_en_arme p t)).pv);atk=p.stats_base.stats.atk;def=p.stats_base.stats.def;acc=p.stats_base.stats.acc};pv_max=p.stats_base.pv_max};sac=p.sac;armequipe=(convertit_string_en_arme p t);statBonusPot=p.statBonusPot}
 
 	(** Fonction qui donne les bonus/malus d'une potion au personnage
+	@author Nicolas S
 	@param p : le personnage
 	@param s : la stats en string à augmenter/diminuer
 	@param i : la valeur du bonus/malus
@@ -190,12 +229,14 @@ let faire_perte_objet : personnage -> Objet.Objet.sac -> int*Objet.Objet.contenu
 
 
 	(** Fonction qui permet de reset les stats bonus des potions
+	@author Nicolas S
 	@param p : le personnage
 	@return le personnage modifié*)
 	let reset_stats_pot : personnage -> personnage = fun p ->
 		{nom=p.nom;genre=p.genre;classe=p.classe;lvl=p.lvl;exp=p.exp;stats_base=p.stats_base;sac=p.sac;armequipe=p.armequipe;statBonusPot=Equipement.Equipement.stats_base()}
 
 	(** Fonction qui génère une arme que le joueur ne possède pas pour que le marchand lui la propose en vente
+	@author Nicolas S
 	@param p : le personnage
 	@return l'objet marchand que le marchand proposera*)
 	let generer_arme_marchand : personnage -> Objet.Objet.objet_marchand = fun p ->
@@ -240,7 +281,11 @@ let faire_perte_objet : personnage -> Objet.Objet.sac -> int*Objet.Objet.contenu
 						let chance = Random.int (List.length obj_obtenable) in Objet.Objet.{quantite = 1; prix = 250; obj = (List.nth obj_obtenable chance)}
 
 
-		
+		(** Fonction qui accorde un bonus aléatoire au personnage en fonction de la potion bu
+		@author Noemie L
+		@param perso : le personnage
+		@param ctn : la potion consomée par le personnage
+		@return un entier correspondant au bonus accordé par le personnage et le personnage avec le bonus*)
     let bonus : personnage -> Objet.Objet.contenu -> int*personnage = fun perso ctn ->
         let lenb = Random.int 100 in
         if ctn=Potion_Precision then 

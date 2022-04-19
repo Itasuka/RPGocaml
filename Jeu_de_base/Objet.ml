@@ -5,10 +5,11 @@ Random.self_init();;
 module type OBJET =
 	sig
 
+	
 	type contenu = Eponge | Piece | Poulet
 
 	type objet = {quantite : int ; obj : contenu}
-
+	
 	type sac = objet list
 
 	(* Fonction qui initialise un sac vide*)
@@ -27,8 +28,17 @@ end
 
 module Objet : OBJET =
 	struct
+
+	(** Type représentant les objets obtenable dans le jeu
+	@author Nicolas M*)
 	type contenu = Eponge | Piece | Poulet
+
+	(** Type représentant les objets avec leur quantité
+	@author Nicolas M*)
 	type objet = {quantite : int ; obj : contenu}
+
+	(** Type représentant le sac d'un personnage
+	@author Nicolas M*)
 	type sac = objet list
 
 	(** Fonction qui initialise un sac vide
@@ -40,7 +50,7 @@ module Objet : OBJET =
 					 ;{quantite = 0 ; obj = Poulet}]
 
 	(** Fonction renvoie le nombre d'occurrence de obj dans sac
-	@author Nicolas M
+	@author Nicolas S
 	@param sac : le sac dans lequel on va compter le nombre d'occurence d'obj
 	@param obj : le contenu dont on veut connaitre le nombre
 	@return le nombre d'occurrence de obj dans sac*)

@@ -42,14 +42,37 @@ end
 
 module Objet : OBJET  =
 	struct
+
+	(** Type représentant les objets obtenable dans le jeu
+	@author Nicolas M*)
 	type contenu = Eponge | Piece | Poulet | Arme of Equipement.Equipement.type_arme | Potion_Puissance | Potion_Precision
+
+	(** type représentant un objet avec sa quantité
+	@author Nicolas M*)
 	type objet = {quantite : int ; obj : contenu}
+
+	(** Type représentant un objet que possède un marchand par un objet, sa quantité et son prix
+	@author Noemie L*)
 	type objet_marchand = {quantite : int; prix : int; obj : contenu }
+
+	(** Type représentant le stock d'un marchand
+	@author Noemie L*)
 	type stock = objet_marchand list
+
+	(** Type représentant un objet par son prix et son contenu
+	@author Noemie L*)
 	type objet_vente = {prix : int ;  obj : contenu}
+
+	(** Type représentant la liste des objet qu'un marchand peut acheter au joueur
+	@author Noemie L*)
 	type stock_vente = objet_vente list
+
+	(** Type représentant l'inventaire du personnage
+	@author Nicolas M*)
 	type sac = objet list
+
 	(** Fonction qui initialise un sac vide
+	@author Nicolas M
 	@return un sac avec tout les objets disponibles avec une quantité 0*)
 	let creer_sac : unit -> sac = 
 		fun () -> [{quantite = 0 ; obj = Eponge}
@@ -77,6 +100,7 @@ module Objet : OBJET  =
 					 ;{quantite = 0 ; obj = Arme (M Baguette_de_sureau)}]
 					 
 	(** Fonction renvoie le nombre d'occurrence de obj dans sac
+	@author Nicolas S
 	@param sac : le sac dans lequel on va compter le nombre d'occurence d'obj
 	@param obj : l'obj dont on veut connaitre le nombre
 	@return le nombre d'occurrence de obj dans sac*)
@@ -89,6 +113,7 @@ module Objet : OBJET  =
 	exception Pas_assez_Objet
 
 	(** Fonction qui modifie la quantité d'un objet dans un sac
+	@author Nicolas S
 	@param sac : le sac qui va être modifié
 	@param objet : objet dont la quantité va être modifié
 	@param qte : quantité à rajouter

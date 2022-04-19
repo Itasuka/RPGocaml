@@ -22,11 +22,21 @@ end
 
 module Monstre : MONSTRE =
 	struct
+
+	(** Type représentant les différents monstres du jeu
+	@author Nicolas M*)
 	type type_monstre = Golem | Sanglier | Moustiques of int
+
+	(** Type représentant l'objet tenu par le monstre s'il en a un
+	@author Nicolas S*)
 	type loot = Objet of Objet.Objet.objet | Rien
+
+	(** Type définissant un monstre par son type, son loot et ses pv
+	@author Nicolas M*)
 	type monstre = {monstre : type_monstre; loot : loot ; pv : int}
-	exception Pas_de_loot
+
 	(** Fontion qui récupère le loot d'un monstre
+	@author Nicolas S
 	@param m : le monstre
 	@return le loot du monstre*)
 	let get_loot : monstre -> Objet.Objet.objet = fun m ->
@@ -34,12 +44,15 @@ module Monstre : MONSTRE =
 		|Rien -> Objet.Objet.{quantite = 0; obj = Eponge}
 		|Objet o -> o
 	(** Fonction qui fait diminuer les pv d'un monstre
+	@author  Nicolas M
 	@param m : le monstre
 	@param pv : les pv enlevé
 	@return le monstre avec les pv modifiés*)
 	let modif_pv : monstre -> int -> monstre = fun m pv -> 
 		{monstre = m.monstre; loot = m.loot; pv = m.pv-pv}
+
 	(** Fonction qui génère un nombre de points de vie aléatoire en fonction du type de monstre
+	@author Nicolas S
 	@param monstre : le type de monstre
 	@return les pv du monstre*)
 	let vie_monstre : type_monstre -> int = fun monstre ->
@@ -47,7 +60,9 @@ module Monstre : MONSTRE =
 		| Golem -> 25 + (Random.int 6)+1
 		| Moustiques n -> 2 + n
 		| Sanglier -> 10 + (Random.int 4)+1
+
 	(** Fonction qui génère un objet aléatoire pour un monstre en fonction de son type
+	@author Nicolas S
 	@param m : le type de monstre
 	@return l'objet tenu par le monstre s'il en a un*)
 	let objet_monstre : type_monstre -> loot = fun m ->
@@ -58,7 +73,9 @@ module Monstre : MONSTRE =
 				| 0 -> Objet {quantite=(Random.int 2)+1; obj=Eponge}
 				| 1 -> Objet {quantite=(Random.int 7)+1; obj=Piece}
 				| _ -> Objet {quantite=1; obj=Poulet}
+
 	(** Fonction qui génère un monstre aléatoire avec ses points de vie et son objet aléatoire
+	@author Nicolas S
 	@return un monstre aléatoire avec ses points de vie et son objet aléatoire*)
 	let generer_monstre_aleatoire : unit -> monstre = fun () ->
 		let i = Random.int 3 in
@@ -66,7 +83,9 @@ module Monstre : MONSTRE =
 			| 0 -> {monstre=Golem; loot=objet_monstre Golem; pv=vie_monstre Golem}
 			| 1 -> let n = Random.int 6 in {monstre=Moustiques (n+1); loot=objet_monstre (Moustiques n); pv=vie_monstre (Moustiques (n+1))}
 			| _ -> {monstre=Sanglier; loot=objet_monstre Sanglier; pv=vie_monstre Sanglier}
+
 	(** Fonction qui inflige des dégats à un personnage en fonction du monstre
+	@author Nicolas M
 	@param p : le personnage qui se fait frapper
 	@param m : le monstre qui frappe
 	@return le personnage avec des pv en moins*)
@@ -77,6 +96,7 @@ module Monstre : MONSTRE =
 		|Moustiques n-> ((-1.)/.2.*.float_of_int n)
 
 	(** Fonction qui associe à un type de monstre son xp gagné en combat
+	@author Nicolas M
 	@param m : le monstre
 	@return l'xp gagné en tuant le monstre*)
 	let xp_monstre : monstre -> int = fun m ->
